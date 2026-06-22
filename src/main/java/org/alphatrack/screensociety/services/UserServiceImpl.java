@@ -1,4 +1,4 @@
 package org.alphatrack.screensociety.services;
 
-public class UserService {
+public class UserServiceImpl {
 }
