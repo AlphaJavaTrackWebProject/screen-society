@@ -1,13 +1,20 @@
 package org.alphatrack.screensociety.models;
 
 import jakarta.persistence.*;
+import lombok.*;
 
 @Entity
 @Table(name = "comments")
+@Setter
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
+    @Setter(AccessLevel.NONE)
     private Long id;
 
     @Column(nullable = false,length = 8192)
@@ -19,5 +26,9 @@ public class Comment {
     foreignKey = @ForeignKey(name = "fk_comment_user_id"))
     private User author;
 
-    private Post post
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "post_id",
+    nullable = false,
+    foreignKey = @ForeignKey(name = "fk_comment_post_id"))
+    private Post post;
 }

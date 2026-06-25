@@ -5,6 +5,7 @@ import lombok.*;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -36,7 +37,7 @@ public class Post {
     @OneToMany(mappedBy = "post",
     cascade = CascadeType.ALL,
     orphanRemoval = true)
-    Builder.Default
+    @Builder.Default
     private List<Comment> commentList = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -54,12 +55,12 @@ public class Post {
     }
 
     public void addComment(Comment comment) {
-        comments.add(comment);
+        commentList.add(comment);
         comment.setPost(this);
     }
 
     public void removeComment(Comment comment) {
-        comments.remove(comment);
+        commentList.remove(comment);
         comment.setPost(null);
     }
 }
