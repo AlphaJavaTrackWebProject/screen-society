@@ -48,7 +48,15 @@ public class Post {
     @JoinTable(name = "post_likes",
     joinColumns = @JoinColumn(name = "post_id"),
     inverseJoinColumns = @JoinColumn(name = "user_id"))
+    @Builder.Default
     private Set<User> likedByUsers = new HashSet<>();
+
+    @ManyToMany
+    @JoinTable(name = "post_tags",
+    joinColumns = @JoinColumn(name = "post_id"),
+    inverseJoinColumns = @JoinColumn(name = "tag_id"))
+    @Builder.Default
+    private Set<Tag> tags = new HashSet<>();
 
     public boolean isRepost() {
         return this.originalPost != null;

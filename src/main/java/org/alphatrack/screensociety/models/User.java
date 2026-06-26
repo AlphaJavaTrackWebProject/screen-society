@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.alphatrack.screensociety.models.enums.Role;
 
-import javax.xml.stream.events.Comment;
+
 import java.util.HashSet;
 import java.util.Set;
 
