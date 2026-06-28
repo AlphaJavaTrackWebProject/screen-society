@@ -4,7 +4,10 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "tags")
+@Table(name = "tags",
+indexes = {
+        @Index(name = "idx_tag_name",columnList = "name")
+})
 @Setter
 @Getter
 @NoArgsConstructor
@@ -12,12 +15,12 @@ import lombok.*;
 @Builder
 public class Tag {
     @Id
-    @Column(name = "id")
+    @Column
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Setter(AccessLevel.NONE)
     private Long id;
 
-    @Column(name = "name")
+    @Column(nullable = false, unique = true)
     private String name;
 
 }

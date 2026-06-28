@@ -71,4 +71,21 @@ public class Post {
         commentList.remove(comment);
         comment.setPost(null);
     }
+
+    public void addTag(Tag tag) {
+        this.tags.add(tag);
+    }
+
+    public void removeTag(Tag tag) {
+        this.tags.remove(tag);
+    }
+
+    public void addLike(User user) {
+        this.likedByUsers.add(user);
+    }
+
+    public void removeLike(User user) {
+        this.likedByUsers.remove(user);
+    }
+
 }
