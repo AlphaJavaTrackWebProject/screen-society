@@ -22,6 +22,8 @@ public class PostResponseDto {
 
     private String content;
 
+    private List<TagResponseDto> tags;
+
     private List<CommentResponseDto> commentList;
 
 
