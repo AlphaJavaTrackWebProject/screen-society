@@ -3,6 +3,7 @@ package org.alphatrack.screensociety.models;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -33,6 +34,9 @@ public class Post {
 
     @Column(name = "content")
     private String content;
+
+    @Column(name = "time_created")
+    private LocalDateTime createdAt;
 
     @OneToMany(mappedBy = "post",
     cascade = CascadeType.ALL,
