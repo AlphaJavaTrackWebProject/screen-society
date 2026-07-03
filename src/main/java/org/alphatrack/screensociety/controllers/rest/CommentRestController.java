@@ -1,6 +1,7 @@
 package org.alphatrack.screensociety.controllers.rest;
 
 
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.alphatrack.screensociety.dto.request.CommentRequestDto;
 import org.alphatrack.screensociety.dto.response.CommentResponseDto;
@@ -18,6 +19,7 @@ public class CommentRestController {
     public CommentRestController() {
     }
 
+    @Operation(summary = "Edits existing comment, Admin,owner or moderator only")
     @PutMapping("/{commentId}")
     public CommentResponseDto editComment(@PathVariable int commentId, @AuthenticationPrincipal User currentUser,
                                           @Valid @RequestBody CommentRequestDto commentRequestDto) {
@@ -25,6 +27,7 @@ public class CommentRestController {
         return null;
     }
 
+    @Operation(summary = "Deletes existing comment, Admin,owner or moderator only")
     @DeleteMapping("/{commentId}")
     public void deleteComment(@PathVariable int commentId, @AuthenticationPrincipal User currentUser) {
         //service.deleteComment(commentId,currentUser);

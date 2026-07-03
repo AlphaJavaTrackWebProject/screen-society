@@ -1,6 +1,7 @@
 package org.alphatrack.screensociety.controllers.rest;
 
 
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.alphatrack.screensociety.dto.request.CommentRequestDto;
 import org.alphatrack.screensociety.dto.request.PostRequestDto;
@@ -22,37 +23,43 @@ public class PostRestController {
     public PostRestController() {
     }
 
+    @Operation(summary = "Retrieves all posts with option to filter by passed tag")
     @GetMapping
     public List<PostResponseDto> getAll(@RequestParam(required = false) String tagToFilter) {
         return null;/*service.getAll(tagToFilter);*/
     }
 
+    @Operation(summary = "Retrieves a specific post by id")
     @GetMapping("/{id}")
     public PostResponseDto getById(@PathVariable int id) {
         return null; /*service.getById(id);*/
     }
 
+    @Operation(summary = "Creates new post")
     @PostMapping
     public PostResponseDto createPost(@Valid @RequestBody PostRequestDto postDTO, @AuthenticationPrincipal User currentUser) {
         return null;/*service.create(postDTO, currentUser);*/
     }
 
+    @Operation(summary = "Edit existing post with option to add tag")
     @PutMapping("/{targetId}")
     public PostResponseDto updatePost(@Valid @RequestBody PostUpdateRequestDto postUpdateDTO,
                                       @PathVariable int targetId, @AuthenticationPrincipal User currentUser) {
         return null;//service.update(postUpdateDTO, targetId, currentUser);
     }
 
+    @Operation(summary = "Deletes a post, Admin,owner or moderator only")
     @DeleteMapping("/{targetId}")
     public void deletePost(@PathVariable int targetId, @AuthenticationPrincipal User currentUser) {
         //service.delete(targetId, currentUser);
     }
 
+    @Operation(summary = "Adds a comment to specific post")
     @PostMapping("/{targetId}/comment")
     public void comment(@PathVariable int targetId, @AuthenticationPrincipal User currentUser, @RequestBody CommentRequestDto commentDTO) {
         //service.comment(targetId, currentUser, commentDTO);
     }
-
+    @Operation(summary = "Adds a like to a specific post")
     @PutMapping("/{targetId}/like")
     public void likePost(@PathVariable int targetId, @AuthenticationPrincipal User currentUser) {
         // service.likePost(targetId, currentUser);
