@@ -35,6 +35,9 @@ public class User {
     @Column(name = "password", nullable = false)
     private String password;
 
+    @Column(name = "is_blocked")
+    private Boolean isBlocked;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)
     private Role role;
@@ -45,5 +48,7 @@ public class User {
     @OneToMany(mappedBy = "author")
     @Builder.Default
     private Set<Post> posts = new HashSet<>();
+
+
 
 }

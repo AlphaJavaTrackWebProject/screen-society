@@ -1,21 +1,21 @@
 package org.alphatrack.screensociety.dto.request;
 
-import org.alphatrack.screensociety.models.Comment;
-import org.alphatrack.screensociety.models.Tag;
-import org.alphatrack.screensociety.models.User;
+
+import lombok.Getter;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 import java.util.Optional;
+@Getter
 
 public class PostFilterOptions {
-    private Optional<String> authorUsername;
-    private Optional<String> title;
-    private Optional<LocalDate> createdBefore;
-    private Optional<LocalDate> createdAfter;
-    private Optional<String> tagName;
-    private Optional<String> sortBy;
-    private Optional<String> sortOrder;
+    private final Optional<String> authorUsername;
+    private final Optional<String> title;
+    private final Optional<LocalDate> createdBefore;
+    private final Optional<LocalDate> createdAfter;
+    private final Optional<String> tagName;
+    private final Optional<String> sortBy;
+    private final Optional<String> sortOrder;
 
     public PostFilterOptions(String authorUsername,
                              String title,
@@ -33,31 +33,4 @@ public class PostFilterOptions {
         this.sortOrder = Optional.ofNullable(sortOrder);
     }
 
-    public Optional<String> getAuthorUsername() {
-        return authorUsername;
-    }
-
-    public Optional<String> getTitle() {
-        return title;
-    }
-
-    public Optional<LocalDate> getCreatedBefore() {
-        return createdBefore;
-    }
-
-    public Optional<LocalDate> getCreatedAfter() {
-        return createdAfter;
-    }
-
-    public Optional<String> getTagName() {
-        return tagName;
-    }
-
-    public Optional<String> getSortBy() {
-        return sortBy;
-    }
-
-    public Optional<String> getSortOrder() {
-        return sortOrder;
-    }
 }
