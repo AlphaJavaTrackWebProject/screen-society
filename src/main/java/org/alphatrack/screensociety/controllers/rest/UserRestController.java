@@ -8,6 +8,7 @@ import org.alphatrack.screensociety.dto.response.UserResponseDto;
 import org.alphatrack.screensociety.models.User;
 import org.alphatrack.screensociety.models.enums.Role;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -64,19 +65,23 @@ public class UserRestController {
     }
 
     @Operation(summary = "Deletes an existing user")
+    @PreAuthorize("hasRole('ADMIN') or #currentUser.id == #targetId ")
     @DeleteMapping("/{targetId}")
     public void deleteUser(@PathVariable int targetId, @AuthenticationPrincipal User currentUser) {
         //service.delete(targetId,currentUser)
     }
 
     @Operation(summary = "Editing a specific user")
+    @PreAuthorize("hasRole('ADMIN') or #currentUser.id == #targetId ")
     @PutMapping("/{targetId}")
     public UserResponseDto updateUser(@Valid @RequestBody UserRequestDto userRequestDto,
                                       @AuthenticationPrincipal User currentUser, @PathVariable int targetId) {
         //service.updateUser(userDTO,currentUser,id)
         return null;
     }
+
     @Operation(summary = "Changes a specific user's status, ADMIN only")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
     @PutMapping("/{targetId}/status")
     public void changeUserStatus(@Valid @RequestBody boolean isBlocked, @AuthenticationPrincipal User currentUser,
                                  @PathVariable int targetId) {
@@ -84,6 +89,7 @@ public class UserRestController {
     }
 
     @Operation(summary = "Changes a specific user's role, ADMIN only")
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{targetId}/role")
     public void changeUserRole(@Valid @RequestBody Role role, @AuthenticationPrincipal User currentUser,
                                @PathVariable int targetId) {
