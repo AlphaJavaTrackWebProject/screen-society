@@ -6,6 +6,7 @@ import jakarta.validation.Valid;
 import org.alphatrack.screensociety.dto.request.TagRequestDto;
 import org.alphatrack.screensociety.dto.response.TagResponseDto;
 import org.alphatrack.screensociety.models.User;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,7 +22,7 @@ public class TagRestController {
     public TagRestController() {
     }
 
-    @Operation(summary = "Retrieves all exsiting tags")
+    @Operation(summary = "Retrieves all existing tags")
     @GetMapping
     public List<TagResponseDto> getAll() {
         return null;//service.getAll();
@@ -34,12 +35,14 @@ public class TagRestController {
     }
 
     @Operation(summary = "Deletes a tag, ADMIN only")
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{targetId}")
     public void deleteTag(@PathVariable int targetId, @AuthenticationPrincipal User currentUser) {
         //service.delete(targetId,currentUser);
     }
 
     @Operation(summary = "Edits a tag, ADMIN only")
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{targetId}")
     public TagResponseDto editTag(@PathVariable int targetId, @AuthenticationPrincipal User currentUser,
                                   @RequestBody TagRequestDto tagDTO) {
