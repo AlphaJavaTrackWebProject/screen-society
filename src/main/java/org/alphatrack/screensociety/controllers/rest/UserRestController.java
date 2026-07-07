@@ -2,6 +2,7 @@ package org.alphatrack.screensociety.controllers.rest;
 
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
+import org.alphatrack.screensociety.dto.request.UserRegistrationDto;
 import org.alphatrack.screensociety.dto.request.UserRequestDto;
 import org.alphatrack.screensociety.dto.response.PostResponseDto;
 import org.alphatrack.screensociety.dto.response.UserResponseDto;
@@ -26,7 +27,7 @@ public class UserRestController {
 
     @Operation(summary = "Creates new user")
     @PostMapping
-    public UserResponseDto createUser(@Valid @RequestBody UserRequestDto userRequestDto) {
+    public UserResponseDto createUser(@Valid @RequestBody UserRegistrationDto userRegistrationDto) {
         //call the service to create a new user
         //service.create(userDTO)
         return null;

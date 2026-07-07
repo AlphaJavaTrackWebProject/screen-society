@@ -17,6 +17,8 @@ import java.util.Set;
 @Builder
 public class User {
 
+    //TODO fix builder ID setter
+
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
