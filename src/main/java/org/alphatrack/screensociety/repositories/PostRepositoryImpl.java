@@ -16,7 +16,6 @@ import java.util.List;
 @Repository
 public class PostRepositoryImpl implements PostRepositoryCustom {
 
-    @PersistenceContext
     private final EntityManager entityManager;
 
     @Autowired
@@ -39,14 +38,12 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
         postFilterOptions.getAuthorUsername().ifPresent(authorUsername ->
                 predicates.add(cb.like(postRoot.get("author").get("username"), authorUsername)));
 
-        postFilterOptions.getCreatedAfter().ifPresent(afterDate -> {
-            predicates.add(cb.greaterThanOrEqualTo(postRoot.get("createdAt"),afterDate.atStartOfDay()));
-        });
+        postFilterOptions.getCreatedAfter().ifPresent(afterDate ->
+                predicates.add(cb.greaterThanOrEqualTo(postRoot.get("createdAt"),afterDate.atStartOfDay())));
 
-        postFilterOptions.getCreatedBefore().ifPresent(beforeDate -> {
-            predicates.add(cb.lessThanOrEqualTo(postRoot.get("createdAt"), beforeDate.atTime(
-                    23,59,59,999999999)));
-        });
+        postFilterOptions.getCreatedBefore().ifPresent(beforeDate ->
+                predicates.add(cb.lessThanOrEqualTo(postRoot.get("createdAt"), beforeDate.atTime(
+                23,59,59,999999999))));
 
         postFilterOptions.getTagName().ifPresent(tagName -> {
             Join<Post, Object> tagsJoin = postRoot.join("tags");
