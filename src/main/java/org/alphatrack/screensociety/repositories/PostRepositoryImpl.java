@@ -2,20 +2,16 @@ package org.alphatrack.screensociety.repositories;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.*;
-import org.alphatrack.screensociety.dto.request.PostFilterOptions;
+import org.alphatrack.screensociety.dto.request.filters.PostFilterOptions;
 import org.alphatrack.screensociety.models.Post;
 import org.alphatrack.screensociety.repositories.contracts.PostRepositoryCustom;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.util.Predicates;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.Queue;
 
 @Repository
 public class PostRepositoryImpl implements PostRepositoryCustom {

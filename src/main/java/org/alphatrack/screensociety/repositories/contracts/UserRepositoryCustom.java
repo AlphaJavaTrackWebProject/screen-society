@@ -1,6 +1,6 @@
 package org.alphatrack.screensociety.repositories.contracts;
 
-import org.alphatrack.screensociety.dto.request.UserFilterOptions;
+import org.alphatrack.screensociety.dto.request.filters.UserFilterOptions;
 import org.alphatrack.screensociety.models.User;
 
 import java.util.List;

@@ -6,7 +6,7 @@ import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
-import org.alphatrack.screensociety.dto.request.UserFilterOptions;
+import org.alphatrack.screensociety.dto.request.filters.UserFilterOptions;
 import org.alphatrack.screensociety.models.User;
 import org.alphatrack.screensociety.repositories.contracts.UserRepositoryCustom;
 import org.springframework.beans.factory.annotation.Autowired;

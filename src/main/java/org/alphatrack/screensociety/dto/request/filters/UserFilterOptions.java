@@ -1,8 +1,7 @@
-package org.alphatrack.screensociety.dto.request;
+package org.alphatrack.screensociety.dto.request.filters;
 
 import lombok.Getter;
 
-import javax.swing.text.html.Option;
 import java.util.Optional;
 
 @Getter

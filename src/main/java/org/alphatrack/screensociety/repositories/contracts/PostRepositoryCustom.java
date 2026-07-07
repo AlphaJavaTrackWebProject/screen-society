@@ -1,6 +1,6 @@
 package org.alphatrack.screensociety.repositories.contracts;
 
-import org.alphatrack.screensociety.dto.request.PostFilterOptions;
+import org.alphatrack.screensociety.dto.request.filters.PostFilterOptions;
 import org.alphatrack.screensociety.models.Post;
 
 import java.util.List;

@@ -1,4 +1,4 @@
-package org.alphatrack.screensociety.dto.request;
+package org.alphatrack.screensociety.dto.request.filters;
 
 
 import lombok.Getter;
