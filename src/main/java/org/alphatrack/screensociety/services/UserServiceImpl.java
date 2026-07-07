@@ -2,6 +2,8 @@ package org.alphatrack.screensociety.services;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
+import org.alphatrack.screensociety.dto.request.UserRegistrationDto;
+import org.alphatrack.screensociety.dto.request.UserUpdateDto;
 import org.alphatrack.screensociety.dto.request.filters.UserFilterOptions;
 import org.alphatrack.screensociety.models.User;
 import org.alphatrack.screensociety.models.enums.Role;
@@ -25,10 +27,10 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public User registerUser(UserRegistrationDto userRegistrationDto) {
-        if (userRepository.findByUsername(userRegistrationDto.getUsername()).isPresent()) {
+        if (userRepository.findUserByUsername(userRegistrationDto.getUsername()).isPresent()) {
             throw new IllegalArgumentException("Username is already taken");
         }
-        if (userRepository.findByEmail(userRegistrationDto.getEmail()).isPresent()) {
+        if (userRepository.findUserByEmail(userRegistrationDto.getEmail()).isPresent()) {
             throw new IllegalArgumentException("Email is already registered");
         }
 
@@ -57,7 +59,7 @@ public class UserServiceImpl implements UserService {
         }
 
         if (userUpdateDto.getEmail() != null && !userUpdateDto.getEmail().equals(currentUser.getEmail()) {
-            if (userRepository.findByEmail(userUpdateDto.getEmail()).isPresent()) {
+            if (userRepository.findUserByEmail(userUpdateDto.getEmail()).isPresent()) {
                 throw new IllegalArgumentException("Email is already taken.");
             }
             currentUser.setEmail(userUpdateDto.getEmail());
@@ -112,7 +114,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getUserByUsername(String username) {
         return userRepository.findUserByUsername(username)
-                .orElseThrow(() -> new EntityNotFoundException(String.format("User with username %s not found", username)));
+                .orElseThrow(() -> new EntityNotFoundException(String.format("User with username %s not found", username)))
     }
 
 }

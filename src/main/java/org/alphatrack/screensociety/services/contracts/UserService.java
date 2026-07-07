@@ -1,5 +1,7 @@
 package org.alphatrack.screensociety.services.contracts;
 
+import org.alphatrack.screensociety.dto.request.UserRegistrationDto;
+import org.alphatrack.screensociety.dto.request.UserUpdateDto;
 import org.alphatrack.screensociety.dto.request.filters.UserFilterOptions;
 import org.alphatrack.screensociety.models.User;
 
