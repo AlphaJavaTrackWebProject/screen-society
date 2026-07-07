@@ -1,9 +1,14 @@
 package org.alphatrack.screensociety.controllers.rest;
 
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
-import org.alphatrack.screensociety.models.Post;
+import org.alphatrack.screensociety.dto.request.UserRequestDto;
+import org.alphatrack.screensociety.dto.response.PostResponseDto;
+import org.alphatrack.screensociety.dto.response.UserResponseDto;
 import org.alphatrack.screensociety.models.User;
+import org.alphatrack.screensociety.models.enums.Role;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,58 +24,75 @@ public class UserRestController {
     public UserRestController() {
     }
 
-
+    @Operation(summary = "Creates new user")
     @PostMapping
-    public void createUser(@Valid @RequestBody /*TODO UserDTO*/) {
+    public UserResponseDto createUser(@Valid @RequestBody UserRequestDto userRequestDto) {
         //call the service to create a new user
         //service.create(userDTO)
+        return null;
     }
 
+    @Operation(summary = "Returns a list with all users")
     @GetMapping
-    public List<User> getAll(@AuthenticationPrincipal User currentUser) {
+    public List<UserResponseDto> getAll(@AuthenticationPrincipal User currentUser) {
         //service.getAll(currentUser)
         return null; //TODO
     }
 
+    @Operation(summary = "Returns a specific user via provided ID")
     @GetMapping("/{id}")
-    public User getById(@PathVariable int id) {
+    public UserResponseDto getById(@PathVariable int id) {
         return null; //TODO
     }
 
+    @Operation(summary = "Searches a user based on a filter : username, email or first name")
     @GetMapping("/search")
-    public List<User> searchUser(
+    public List<UserResponseDto> searchUser(
             @RequestParam(required = false) String username,
             @RequestParam(required = false) String email,
             @RequestParam(required = false) String firstName) {
-        //return service.searchUser(username,email,firstName)
+        return null; //service.searchUser(username,email,firstName)
     }
 
+    @Operation(summary = "Returns a specific user's posts, which can be sorted or filtered by criteria")
     @GetMapping("/{targetId}/posts")
-    public List<Post> getUserPosts(
+    public List<PostResponseDto> getUserPosts(
             @PathVariable int targetId,
             @RequestParam(required = false) String sortBy,
             @RequestParam(required = false) String filterBy) {
 
-        //return service.getUserPosts(targetId,sortBy,filterBy)
+        return null; //service.getUserPosts(targetId,sortBy,filterBy)
     }
 
+    @Operation(summary = "Deletes an existing user")
+    @PreAuthorize("hasRole('ADMIN') or #currentUser.id == #targetId ")
     @DeleteMapping("/{targetId}")
     public void deleteUser(@PathVariable int targetId, @AuthenticationPrincipal User currentUser) {
         //service.delete(targetId,currentUser)
     }
 
+    @Operation(summary = "Editing a specific user")
+    @PreAuthorize("hasRole('ADMIN') or #currentUser.id == #targetId ")
     @PutMapping("/{targetId}")
-    public void updateUser(@Valid @RequestBody /*TODO userDTO*/, @AuthenticationPrincipal User currentUser, @PathVariable int targetId) {
+    public UserResponseDto updateUser(@Valid @RequestBody UserRequestDto userRequestDto,
+                                      @AuthenticationPrincipal User currentUser, @PathVariable int targetId) {
         //service.updateUser(userDTO,currentUser,id)
+        return null;
     }
 
+    @Operation(summary = "Changes a specific user's status, ADMIN only")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
     @PutMapping("/{targetId}/status")
-    public void changeUserStatus(@Valid @RequestBody boolean isBlocked, @AuthenticationPrincipal User currentUser, @PathVariable int targetId) {
+    public void changeUserStatus(@Valid @RequestBody boolean isBlocked, @AuthenticationPrincipal User currentUser,
+                                 @PathVariable int targetId) {
         //service.changeStatus(isBlocked,currentUser,targetId)
     }
 
+    @Operation(summary = "Changes a specific user's role, ADMIN only")
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{targetId}/role")
-    public void changeUserRole(@Valid @RequestBody /*TODO ENUM ROLE CLASS*/ role, @AuthenticationPrincipal User currentUser, @PathVariable int targetId) {
+    public void changeUserRole(@Valid @RequestBody Role role, @AuthenticationPrincipal User currentUser,
+                               @PathVariable int targetId) {
         //service.changeRole(role,currentUser,targetId)
     }
 }
