@@ -1,8 +1,12 @@
 package org.alphatrack.screensociety.controllers.rest;
 
 
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
+import org.alphatrack.screensociety.dto.request.TagRequestDto;
+import org.alphatrack.screensociety.dto.response.TagResponseDto;
 import org.alphatrack.screensociety.models.User;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,23 +22,30 @@ public class TagRestController {
     public TagRestController() {
     }
 
+    @Operation(summary = "Retrieves all existing tags")
     @GetMapping
-    public List<Tag> getAll(){
-        service.getAll();
+    public List<TagResponseDto> getAll() {
+        return null;//service.getAll();
     }
 
+    @Operation(summary = "Creates a tag if it doesnt exist")
     @PostMapping
-    public void createTag (@Valid @RequestBody TagDTO tagDTO){
-        service.create(tagDTO);
+    public TagResponseDto createTag(@Valid @RequestBody TagRequestDto tagDTO) {
+        return null; // service.create(tagDTO);
     }
 
+    @Operation(summary = "Deletes a tag, ADMIN only")
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{targetId}")
-    public void deleteTag(@PathVariable int targetId, @AuthenticationPrincipal User currentUser){
-        service.delete(targetId,currentUser);
+    public void deleteTag(@PathVariable int targetId, @AuthenticationPrincipal User currentUser) {
+        //service.delete(targetId,currentUser);
     }
 
+    @Operation(summary = "Edits a tag, ADMIN only")
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{targetId}")
-    public void editTag(@PathVariable int targetId, @AuthenticationPrincipal User currentUser, @RequestBody TagDTO tagDTO){
-        service.edit(targetId,currentUser,tagDTO);
+    public TagResponseDto editTag(@PathVariable int targetId, @AuthenticationPrincipal User currentUser,
+                                  @RequestBody TagRequestDto tagDTO) {
+        return null;//service.edit(targetId,currentUser,tagDTO);
     }
 }
