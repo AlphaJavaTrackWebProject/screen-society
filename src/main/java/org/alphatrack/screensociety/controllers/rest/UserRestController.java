@@ -1,6 +1,7 @@
 package org.alphatrack.screensociety.controllers.rest;
 
 import jakarta.validation.Valid;
+import org.alphatrack.screensociety.models.Post;
 import org.alphatrack.screensociety.models.User;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
