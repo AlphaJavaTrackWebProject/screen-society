@@ -8,7 +8,6 @@ import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import org.alphatrack.screensociety.dto.request.filters.CommentFilterOptions;
 import org.alphatrack.screensociety.models.Comment;
-import org.alphatrack.screensociety.repositories.contracts.CommentRepository;
 import org.alphatrack.screensociety.repositories.contracts.CommentRepositoryCustom;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -18,7 +17,6 @@ import java.util.List;
 @Repository
 public class CommentRepositoryImpl implements CommentRepositoryCustom {
 
-    @PersistenceContext
     private final EntityManager entityManager;
 
     @Autowired
