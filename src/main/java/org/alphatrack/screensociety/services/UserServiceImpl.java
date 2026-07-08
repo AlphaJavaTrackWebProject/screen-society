@@ -57,14 +57,9 @@ public class UserServiceImpl implements UserService {
         if (userUpdateDto.getLastName() != null) {
             currentUser.setLastName(userUpdateDto.getLastName());
         }
+        // TODO custom exceptions
 
-        if (userUpdateDto.getEmail() != null && !userUpdateDto.getEmail().equals(currentUser.getEmail())) {
-            if (userRepository.findUserByEmail(userUpdateDto.getEmail()).isPresent()) {
-                throw new IllegalArgumentException("Email is already taken.");
-            }
-            currentUser.setEmail(userUpdateDto.getEmail());
-        }
-        return userRepository.save(currentUser);
+       return userRepository.save(currentUser);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -82,7 +77,7 @@ public class UserServiceImpl implements UserService {
         if (user.getRole() == Role.ADMIN) {
             throw new IllegalArgumentException("You cannot block another admin");
         }
-
+        // TODO custom exception
         user.setBlocked(true);
         userRepository.save(user);
     }
@@ -111,6 +106,11 @@ public class UserServiceImpl implements UserService {
                 .orElseThrow(() -> new EntityNotFoundException(String.format("User with id %d not found", id)));
     }
 
+    @Override
+    public User getUserByUsername(String username) {
+        return userRepository.findUserByUsername(username)
+                .orElseThrow(() -> new EntityNotFoundException(String.format("User with username %s not found", username)));
+    }
 
 
 }
