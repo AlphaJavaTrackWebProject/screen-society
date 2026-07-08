@@ -58,13 +58,13 @@ public class UserServiceImpl implements UserService {
             currentUser.setLastName(userUpdateDto.getLastName());
         }
 
-        if (userUpdateDto.getEmail() != null && !userUpdateDto.getEmail().equals(currentUser.getEmail()) {
+        if (userUpdateDto.getEmail() != null && !userUpdateDto.getEmail().equals(currentUser.getEmail())) {
             if (userRepository.findUserByEmail(userUpdateDto.getEmail()).isPresent()) {
                 throw new IllegalArgumentException("Email is already taken.");
             }
             currentUser.setEmail(userUpdateDto.getEmail());
         }
-        userRepository.save(currentUser);
+        return userRepository.save(currentUser);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -114,7 +114,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getUserByUsername(String username) {
         return userRepository.findUserByUsername(username)
-                .orElseThrow(() -> new EntityNotFoundException(String.format("User with username %s not found", username)))
+                .orElseThrow(() -> new EntityNotFoundException(String.format("User with username %s not found", username)));
     }
 
 }

@@ -9,7 +9,6 @@ import java.util.List;
 
 public interface UserService {
     User registerUser(UserRegistrationDto userRegistrationDto);
-
     User updateProfile(UserUpdateDto userUpdateDto, User currentUser);
 
     List<User> searchUsers(UserFilterOptions options);

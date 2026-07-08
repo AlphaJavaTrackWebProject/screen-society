@@ -36,13 +36,13 @@ public class CommentRepositoryImpl implements CommentRepositoryCustom {
                 predicates.add(cb.like(commentRoot.get("content"),"%" + content + "%")));
 
         commentFilterOptions.getAuthorUsername().ifPresent(authorUsername ->
-                predicates.add(cb.like(commentRoot.get("authorUsername"), "%" + authorUsername + "%")));
+                predicates.add(cb.like(commentRoot.get("author").get("username"), "%" + authorUsername + "%")));
 
         commentFilterOptions.getMinLength().ifPresent(minLength ->
-                predicates.add(cb.equal(commentRoot.get("minLength"), minLength)));
+                predicates.add(cb.greaterThanOrEqualTo(commentRoot.get("content"), minLength)));
 
         commentFilterOptions.getMaxLength().ifPresent(maxLength ->
-                predicates.add(cb.equal(commentRoot.get("maxLength"), maxLength)));
+                predicates.add(cb.lessThanOrEqualTo(commentRoot.get("content"), maxLength)));
 
         cq.where(cb.and(predicates.toArray(new Predicate[0])));
 
