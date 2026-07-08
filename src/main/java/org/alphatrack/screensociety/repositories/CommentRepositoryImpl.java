@@ -12,6 +12,7 @@ import org.alphatrack.screensociety.repositories.contracts.CommentRepositoryCust
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 @Repository
@@ -38,11 +39,17 @@ public class CommentRepositoryImpl implements CommentRepositoryCustom {
         commentFilterOptions.getAuthorUsername().ifPresent(authorUsername ->
                 predicates.add(cb.like(commentRoot.get("author").get("username"), "%" + authorUsername + "%")));
 
+        commentFilterOptions.getCreatedBefore().ifPresent(beforeDate ->
+                predicates.add(cb.lessThanOrEqualTo(commentRoot.get("createdAt"), beforeDate.atTime(LocalTime.MAX))));
+
+        commentFilterOptions.getCreatedAfter().ifPresent(afterDate ->
+                predicates.add(cb.greaterThanOrEqualTo(commentRoot.get("createdAt"), afterDate.atStartOfDay())));
+
         commentFilterOptions.getMinLength().ifPresent(minLength ->
-                predicates.add(cb.greaterThanOrEqualTo(commentRoot.get("content"), minLength)));
+                predicates.add(cb.greaterThanOrEqualTo(cb.length(commentRoot.get("content")), minLength)));
 
         commentFilterOptions.getMaxLength().ifPresent(maxLength ->
-                predicates.add(cb.lessThanOrEqualTo(commentRoot.get("content"), maxLength)));
+                predicates.add(cb.lessThanOrEqualTo(cb.length(commentRoot.get("content")), maxLength)));
 
         cq.where(cb.and(predicates.toArray(new Predicate[0])));
 

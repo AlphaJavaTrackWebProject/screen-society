@@ -3,6 +3,8 @@ package org.alphatrack.screensociety.models;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "comments")
 @Setter
@@ -19,6 +21,9 @@ public class Comment {
 
     @Column(nullable = false,length = 8192)
     private String content;
+
+    @Column(name = "time_created")
+    private LocalDateTime createdAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id",
