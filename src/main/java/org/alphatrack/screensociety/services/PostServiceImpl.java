@@ -42,16 +42,14 @@ public class PostServiceImpl implements PostService {
 
     @Transactional
     @Override
-    public Post createPost(PostRequestDto postRequestDto) {
-        User author = userRepository.findUserByEmail(postRequestDto.getAuthorUsername())
-                .orElseThrow(() -> new EntityNotFoundException("You are not registered"));
+    public Post createPost(PostRequestDto postRequestDto, User currentUser) {
 
-        if (author.isBlocked()) {
+        if (currentUser.isBlocked()) {
             throw new IllegalStateException("You are blocked and unable to create post");
         }
 
         Post newPost = Post.builder()
-                .author(author)
+                .author(currentUser)
                 .title(postRequestDto.getTitle())
                 .content(postRequestDto.getContent())
                 .createdAt(LocalDateTime.now())
@@ -62,18 +60,16 @@ public class PostServiceImpl implements PostService {
 
     @Transactional
     @Override
-    public Post addCommentOnPost(CommentRequestDto commentRequestDto, Long postId) {
-        User author = userRepository.findUserByUsername(commentRequestDto.getAuthorUsername())
-                .orElseThrow(() -> new EntityNotFoundException("You are not registered"));
+    public Post addCommentOnPost(CommentRequestDto commentRequestDto, Long postId, User currentUser) {
 
-        if (author.isBlocked()) {
+        if (currentUser.isBlocked()) {
             throw new IllegalStateException("You are blocked and unable to make comments");
         }
 
         Post post = getByPostId(postId);
 
         Comment comment = Comment.builder()
-                .author(author)
+                .author(currentUser)
                 .content(commentRequestDto.getContent())
                 .build();
 
@@ -84,18 +80,19 @@ public class PostServiceImpl implements PostService {
 
     @Transactional
     @Override
-    public Post addLikesOnPost(CommentRequestDto commentRequestDto, Long postId) {
-        User author = userRepository.findUserByUsername(commentRequestDto.getAuthorUsername())
-                .orElseThrow(() -> new EntityNotFoundException("You are not registered"));
+    public Post addLikesOnPost(Long postId, User currentUser) {
 
-        if (author.isBlocked()) {
+        if (currentUser.isBlocked()) {
             throw new IllegalStateException("You are blocked and unable to make comments");
         }
 
         Post post = getByPostId(postId);
 
-        post.addLike(author);
-
+        if (post.getLikedByUsers().contains(currentUser)) {
+            post.removeLike(currentUser);
+        } else {
+            post.addLike(currentUser);
+        }
         return postRepository.save(post);
     }
 
@@ -149,19 +146,19 @@ public class PostServiceImpl implements PostService {
         return postRepository.save(post);
     }
 
-    @Transactional
+
     @Override
     public List<Post> searchPosts(PostFilterOptions postFilterOptions) {
         return postRepository.findAll(postFilterOptions);
     }
 
-    @Transactional
+
     @Override
     public List<Post> showTop10MostCommented() {
         return postRepository.findTop10MostCommented();
     }
 
-    @Transactional
+
     @Override
     public List<Post> show10MostRecentPosts() {
         return postRepository.find10MostRecentPosts();
@@ -172,7 +169,7 @@ public class PostServiceImpl implements PostService {
     public void deletePost(Long postId,User currentUser) {
         Post post = getByPostId(postId);
         boolean isOwner = post.getAuthor().getId().equals(currentUser.getId());
-        boolean isAdmin = post.getAuthor().getRole().equals(Role.ADMIN);
+        boolean isAdmin = currentUser.getRole().equals(Role.ADMIN);
 
         if (!isOwner && !isAdmin) {
             throw new AccessDeniedException("Only the author or an admin can delete a post");

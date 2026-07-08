@@ -6,6 +6,7 @@ import org.alphatrack.screensociety.models.enums.Role;
 
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -49,4 +50,14 @@ public class User {
     @Builder.Default
     private Set<Post> posts = new HashSet<>();
 
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof User user)) return false;
+        return Objects.equals(username, user.username);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(username);
+    }
 }

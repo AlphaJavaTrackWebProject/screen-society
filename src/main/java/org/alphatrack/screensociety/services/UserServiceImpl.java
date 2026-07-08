@@ -76,7 +76,7 @@ public class UserServiceImpl implements UserService {
     @PreAuthorize("hasRole('ADMIN')")
     @Transactional
     @Override
-    public void blockUser(Integer userId) {
+    public void blockUser(Long userId) {
         User user = getUserById(userId);
 
         if (user.getRole() == Role.ADMIN) {
@@ -90,7 +90,7 @@ public class UserServiceImpl implements UserService {
     @PreAuthorize("hasRole('ADMIN')")
     @Transactional
     @Override
-    public void unBlockUser(Integer userId) {
+    public void unBlockUser(Long userId) {
         User user = getUserById(userId);
         user.setBlocked(false);
         userRepository.save(user);
@@ -99,22 +99,18 @@ public class UserServiceImpl implements UserService {
     @PreAuthorize("hasRole('ADMIN')")
     @Transactional
     @Override
-    public void promoteToAdmin(Integer userId) {
+    public void promoteToAdmin(Long userId) {
         User user = getUserById(userId);
         user.setRole(Role.ADMIN);
         userRepository.save(user);
     }
 
     @Override
-    public User getUserById(Integer id) {
+    public User getUserById(Long id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(String.format("User with id %d not found", id)));
     }
 
-    @Override
-    public User getUserByUsername(String username) {
-        return userRepository.findUserByUsername(username)
-                .orElseThrow(() -> new EntityNotFoundException(String.format("User with username %s not found", username)));
-    }
+
 
 }

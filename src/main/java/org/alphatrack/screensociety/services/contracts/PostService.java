@@ -11,9 +11,9 @@ import org.alphatrack.screensociety.models.User;
 import java.util.List;
 
 public interface PostService {
-    Post createPost(PostRequestDto postRequestDto);
-    Post addCommentOnPost(CommentRequestDto commentRequestDto, Long postId);
-    Post addLikesOnPost(CommentRequestDto commentRequestDto, Long postId);
+    Post createPost(PostRequestDto postRequestDto, User currentUser);
+    Post addCommentOnPost(CommentRequestDto commentRequestDto, Long postId, User currentUser);
+    Post addLikesOnPost(Long postId, User currentUser);
     Post repost(Long postId,User currentUser);
     Post addTags(Long postId, TagRequestDto tagRequestDto, User currentUser);
 
