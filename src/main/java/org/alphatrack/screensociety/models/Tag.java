@@ -3,6 +3,8 @@ package org.alphatrack.screensociety.models;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.Objects;
+
 @Entity
 @Table(name = "tags",
 indexes = {
@@ -23,4 +25,14 @@ public class Tag {
     @Column(nullable = false, unique = true)
     private String name;
 
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof Tag tag)) return false;
+        return Objects.equals(name, tag.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(name);
+    }
 }
