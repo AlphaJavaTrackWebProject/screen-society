@@ -27,14 +27,12 @@ import java.util.List;
 public class PostServiceImpl implements PostService {
 
     private final PostRepository postRepository;
-    private final UserRepository userRepository;
     private final TagRepository tagRepository;
 
 
     @Autowired
-    public PostServiceImpl(PostRepository postRepository, UserRepository userRepository,TagRepository tagRepository) {
+    public PostServiceImpl(PostRepository postRepository, TagRepository tagRepository) {
         this.postRepository = postRepository;
-        this.userRepository = userRepository;
         this.tagRepository = tagRepository;
 
     }
