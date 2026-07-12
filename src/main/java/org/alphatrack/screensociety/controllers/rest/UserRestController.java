@@ -3,97 +3,141 @@ package org.alphatrack.screensociety.controllers.rest;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.alphatrack.screensociety.dto.request.UserRegistrationDto;
-import org.alphatrack.screensociety.dto.request.UserRequestDto;
+
+import org.alphatrack.screensociety.dto.request.UserUpdateDto;
+import org.alphatrack.screensociety.dto.request.filters.PostFilterOptions;
+import org.alphatrack.screensociety.dto.request.filters.UserFilterOptions;
 import org.alphatrack.screensociety.dto.response.PostResponseDto;
 import org.alphatrack.screensociety.dto.response.UserResponseDto;
 import org.alphatrack.screensociety.models.User;
-import org.alphatrack.screensociety.models.enums.Role;
-import org.springframework.security.access.annotation.Secured;
+
+import org.alphatrack.screensociety.services.contracts.UserService;
+import org.alphatrack.screensociety.utils.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/users")
 public class UserRestController {
 
-    //TODO inject the dependencies
+    private final UserService userService;
+    private final ModelMapper modelMapper;
 
-
-    public UserRestController() {
+    @Autowired
+    public UserRestController(UserService userService, ModelMapper modelMapper) {
+        this.userService = userService;
+        this.modelMapper = modelMapper;
     }
 
     @Operation(summary = "Creates new user")
     @PostMapping
     public UserResponseDto createUser(@Valid @RequestBody UserRegistrationDto userRegistrationDto) {
-        //call the service to create a new user
-        //service.create(userDTO)
-        return null;
+
+        return modelMapper.userToUserDto(userService.registerUser(userRegistrationDto));
     }
 
     @Operation(summary = "Returns a list with all users")
     @GetMapping
-    public List<UserResponseDto> getAll(@AuthenticationPrincipal User currentUser) {
-        //service.getAll(currentUser)
-        return null; //TODO
+    @PreAuthorize("hasRole('ADMIN')")
+    public List<UserResponseDto> getAll() {
+        return modelMapper.usersListToResponseDtoList(userService.searchUsers(UserFilterOptions.builder().build()));
     }
 
     @Operation(summary = "Returns a specific user via provided ID")
     @GetMapping("/{id}")
-    public UserResponseDto getById(@PathVariable int id) {
-        return null; //TODO
+    public UserResponseDto getById(@PathVariable Long id) {
+
+        return modelMapper.userToUserDto(userService.getUserById(id));
+
     }
 
     @Operation(summary = "Searches a user based on a filter : username, email or first name")
     @GetMapping("/search")
     public List<UserResponseDto> searchUser(
+
             @RequestParam(required = false) String username,
             @RequestParam(required = false) String email,
             @RequestParam(required = false) String firstName) {
-        return null; //service.searchUser(username,email,firstName)
+
+        UserFilterOptions filterOptions = UserFilterOptions.builder()
+                .username(Optional.ofNullable(username))
+                .email(Optional.ofNullable(email))
+                .firstName(Optional.ofNullable(email))
+                .build();
+
+        return modelMapper.usersListToResponseDtoList(userService.searchUsers(filterOptions));
     }
 
     @Operation(summary = "Returns a specific user's posts, which can be sorted or filtered by criteria")
     @GetMapping("/{targetId}/posts")
     public List<PostResponseDto> getUserPosts(
-            @PathVariable int targetId,
-            @RequestParam(required = false) String sortBy,
-            @RequestParam(required = false) String filterBy) {
 
-        return null; //service.getUserPosts(targetId,sortBy,filterBy)
+            @PathVariable Long targetId,
+            @RequestParam(required = false) String sortBy,
+            @RequestParam(required = false) String title,
+            @RequestParam(required = false) String authorUsername,
+            @RequestParam(required = false) String tagName,
+            @RequestParam(required = false) LocalDate createdBefore,
+            @RequestParam(required = false) LocalDate createdAfter,
+            @RequestParam(required = false) String sortOrder) {
+
+        PostFilterOptions postFilterOptions = PostFilterOptions.builder()
+                .sortBy(Optional.ofNullable(sortBy))
+                .title(Optional.ofNullable(title))
+                .authorUsername(Optional.ofNullable(authorUsername))
+                .tagName(Optional.ofNullable(tagName))
+                .createdBefore(Optional.ofNullable(createdBefore))
+                .createdAfter(Optional.ofNullable(createdAfter))
+                .sortOrder(Optional.ofNullable(sortOrder))
+                .build();
+
+        return modelMapper.postsToPostsDto(userService.getUserPosts(targetId, postFilterOptions));
+
     }
 
     @Operation(summary = "Deletes an existing user")
     @PreAuthorize("hasRole('ADMIN') or #currentUser.id == #targetId ")
     @DeleteMapping("/{targetId}")
-    public void deleteUser(@PathVariable int targetId, @AuthenticationPrincipal User currentUser) {
-        //service.delete(targetId,currentUser)
+    public void deleteUser(@PathVariable Long targetId, @AuthenticationPrincipal User currentUser) {
+
+        userService.removeUser(targetId, currentUser);
     }
 
     @Operation(summary = "Editing a specific user")
     @PreAuthorize("hasRole('ADMIN') or #currentUser.id == #targetId ")
     @PutMapping("/{targetId}")
-    public UserResponseDto updateUser(@Valid @RequestBody UserRequestDto userRequestDto,
-                                      @AuthenticationPrincipal User currentUser, @PathVariable int targetId) {
-        //service.updateUser(userDTO,currentUser,id)
-        return null;
+    public UserResponseDto updateUser(@Valid @RequestBody UserUpdateDto userUpdateDto,
+                                      @AuthenticationPrincipal User currentUser, @PathVariable Long targetId) {
+
+        return modelMapper.userToUserDto(userService.updateProfile(userUpdateDto, currentUser, targetId));
+
     }
 
     @Operation(summary = "Changes a specific user's status, ADMIN only")
-    @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR')")
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{targetId}/status")
-    public void changeUserStatus(@Valid @RequestBody boolean isBlocked, @AuthenticationPrincipal User currentUser,
-                                 @PathVariable int targetId) {
-        //service.changeStatus(isBlocked,currentUser,targetId)
+    public void changeStatus(@PathVariable Long targetId) {
+
+        User targetUser = userService.getUserById(targetId);
+
+        if (targetUser.isBlocked()) {
+            userService.unBlockUser(targetId);
+        } else {
+            userService.blockUser(targetId);
+        }
     }
 
     @Operation(summary = "Changes a specific user's role, ADMIN only")
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{targetId}/role")
-    public void changeUserRole(@Valid @RequestBody Role role, @AuthenticationPrincipal User currentUser,
-                               @PathVariable int targetId) {
-        //service.changeRole(role,currentUser,targetId)
+    public void changeUserRole(@PathVariable Long targetId) {
+        userService.promoteToAdmin(targetId);
     }
 }

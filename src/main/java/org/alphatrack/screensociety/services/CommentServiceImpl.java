@@ -68,4 +68,17 @@ public class CommentServiceImpl implements CommentService {
 
         commentRepository.delete(comment);
     }
+
+    @Override
+    public Comment getCommentForEdit(Long commentId, User currentUser) {
+        Comment comment = getCommentById(commentId);
+
+        boolean isOwner = comment.getAuthor().equals(currentUser);
+
+        if (!isOwner) {
+            throw new AccessDeniedException("Only the author can edit this comment");
+        }
+
+        return comment;
+    }
 }

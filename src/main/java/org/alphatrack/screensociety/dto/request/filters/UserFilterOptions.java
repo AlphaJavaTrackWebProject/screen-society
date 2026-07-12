@@ -1,9 +1,12 @@
 package org.alphatrack.screensociety.dto.request.filters;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 
 import java.util.Optional;
-
+@Builder
+@AllArgsConstructor
 @Getter
 public class UserFilterOptions {
     private final Optional<String> username;
