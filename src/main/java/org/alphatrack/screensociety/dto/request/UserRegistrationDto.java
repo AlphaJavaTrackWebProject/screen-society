@@ -8,7 +8,7 @@ import lombok.*;
 @Getter
 @Setter
 
-public class UserRegistrationDto {
+public class  UserRegistrationDto {
 
     @NotBlank(message = "First name cannot be empty")
     @Size(message = "The length of First name should be between 4 and 32 characters"

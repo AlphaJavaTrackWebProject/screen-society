@@ -12,6 +12,7 @@ public interface CommentService {
 
     Comment getCommentById(Long commentId);
     Comment updateComment(Long commentId, CommentRequestDto commentRequestDto, User currentUser);
+    Comment getCommentForEdit(Long commentId,User currentUser);
 
     void deleteComment(Long commentId, User currentUser);
 

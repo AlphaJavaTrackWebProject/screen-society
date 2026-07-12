@@ -4,6 +4,7 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.alphatrack.screensociety.dto.request.CommentRequestDto;
 import org.alphatrack.screensociety.dto.request.PostRequestDto;
+import org.alphatrack.screensociety.dto.request.PostUpdateRequestDto;
 import org.alphatrack.screensociety.dto.request.TagRequestDto;
 import org.alphatrack.screensociety.dto.request.filters.PostFilterOptions;
 import org.alphatrack.screensociety.models.Comment;
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class PostServiceImpl implements PostService {
@@ -54,6 +56,43 @@ public class PostServiceImpl implements PostService {
                 .build();
 
         return postRepository.save(newPost);
+    }
+
+    @Transactional
+    @Override
+    public Post updatePost(Long postId, PostUpdateRequestDto postUpdateRequestDto, User currentUser) {
+
+        Post post = getByPostId(postId);
+
+        boolean isOwner = post.getAuthor().equals(currentUser);
+
+        if (!isOwner){
+            throw new AccessDeniedException("Only author / owner can edit it's post");
+        }
+
+        Set<Tag> tags = new HashSet<>();
+
+       for (String tagName : postUpdateRequestDto.getTags()){
+
+           String formattedTagName = tagName.toLowerCase().trim();
+
+           Tag tag = tagRepository.findByName(formattedTagName).orElseGet(() -> {
+
+               Tag newTag = Tag.builder()
+                       .name(formattedTagName)
+                       .build();
+
+               return tagRepository.save(newTag);
+           });
+
+           tags.add(tag);
+       }
+
+        post.setContent(postUpdateRequestDto.getContent());
+        post.setTags(tags);
+
+        postRepository.save(post);
+        return post;
     }
 
     @Transactional
@@ -99,7 +138,7 @@ public class PostServiceImpl implements PostService {
     public Post repost(Long postId, User currentUser) {
 
         if (currentUser.isBlocked()) {
-                throw new IllegalStateException("You are blocked and unable to repost");
+            throw new IllegalStateException("You are blocked and unable to repost");
         }
 
         Post postToBeReposted = getByPostId(postId);
@@ -164,7 +203,7 @@ public class PostServiceImpl implements PostService {
 
     @Transactional
     @Override
-    public void deletePost(Long postId,User currentUser) {
+    public void deletePost(Long postId, User currentUser) {
         Post post = getByPostId(postId);
         boolean isOwner = post.getAuthor().getId().equals(currentUser.getId());
         boolean isAdmin = currentUser.getRole().equals(Role.ADMIN);
@@ -180,6 +219,19 @@ public class PostServiceImpl implements PostService {
     public Post getByPostId(Long id) {
         return postRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException(String.format("Post with id %d does not exist", id)));
+    }
+
+    @Override
+    public Post getPostForUpdate(Long postId, User currentUser) {
+        Post post = getByPostId(postId);
+
+        boolean isOwner = post.getAuthor().equals(currentUser);
+
+        if (!isOwner){
+            throw new AccessDeniedException("Only author can edit its post/s");
+        }
+
+        return post;
     }
 
 }

@@ -1,13 +1,16 @@
 package org.alphatrack.screensociety.dto.request.filters;
 
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 import java.util.Optional;
 @Getter
-
+@Builder
+@AllArgsConstructor
 public class PostFilterOptions {
     private final Optional<String> authorUsername;
     private final Optional<String> title;

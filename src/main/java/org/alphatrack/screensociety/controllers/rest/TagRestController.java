@@ -6,6 +6,9 @@ import jakarta.validation.Valid;
 import org.alphatrack.screensociety.dto.request.TagRequestDto;
 import org.alphatrack.screensociety.dto.response.TagResponseDto;
 import org.alphatrack.screensociety.models.User;
+import org.alphatrack.screensociety.services.contracts.TagService;
+import org.alphatrack.screensociety.utils.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -16,36 +19,51 @@ import java.util.List;
 @RequestMapping("/api/tags")
 public class TagRestController {
 
-    //TODO inject the dependencies
+    private final TagService tagService;
+    private final ModelMapper modelMapper;
 
-
-    public TagRestController() {
+    @Autowired
+    public TagRestController(TagService tagService,ModelMapper modelMapper) {
+        this.tagService = tagService;
+        this.modelMapper = modelMapper;
     }
 
     @Operation(summary = "Retrieves all existing tags")
     @GetMapping
     public List<TagResponseDto> getAll() {
-        return null;//service.getAll();
+
+        return modelMapper.tagsToTagsDto(tagService.getAll());
+
+    }
+
+    @GetMapping("/{name}")
+    public TagResponseDto getByName(@PathVariable String name){
+        return modelMapper.tagToTagDto(tagService.getByName(name));
     }
 
     @Operation(summary = "Creates a tag if it doesnt exist")
     @PostMapping
     public TagResponseDto createTag(@Valid @RequestBody TagRequestDto tagDTO) {
-        return null; // service.create(tagDTO);
+
+        return modelMapper.tagToTagDto(tagService.createTag(tagDTO));
+
     }
 
     @Operation(summary = "Deletes a tag, ADMIN only")
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{targetId}")
-    public void deleteTag(@PathVariable int targetId, @AuthenticationPrincipal User currentUser) {
-        //service.delete(targetId,currentUser);
+    public void deleteTag(@PathVariable Long targetId, @AuthenticationPrincipal User currentUser) {
+
+        tagService.deleteTag(targetId);
+
     }
 
     @Operation(summary = "Edits a tag, ADMIN only")
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{targetId}")
-    public TagResponseDto editTag(@PathVariable int targetId, @AuthenticationPrincipal User currentUser,
-                                  @RequestBody TagRequestDto tagDTO) {
-        return null;//service.edit(targetId,currentUser,tagDTO);
+    public TagResponseDto editTag(@PathVariable Long targetId, @RequestBody TagRequestDto tagDTO) {
+
+        return modelMapper.tagToTagDto(tagService.editTag(targetId,tagDTO));
+
     }
 }

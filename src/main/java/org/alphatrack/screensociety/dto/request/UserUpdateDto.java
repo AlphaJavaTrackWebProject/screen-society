@@ -3,11 +3,13 @@ package org.alphatrack.screensociety.dto.request;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserUpdateDto {
     @NotBlank(message = "First name cannot be empty")
     @Size(message = "The length of First name should be between 4 and 32 characters"
