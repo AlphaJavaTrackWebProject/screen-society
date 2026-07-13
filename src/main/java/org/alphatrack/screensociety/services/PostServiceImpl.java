@@ -44,7 +44,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public Post createPost(PostRequestDto postRequestDto, User currentUser) {
 
-        if (currentUser.isBlocked()) {
+        if (currentUser.getIsBlocked()) {
             throw new IllegalStateException("You are blocked and unable to create post");
         }
 
@@ -99,7 +99,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public Post addCommentOnPost(CommentRequestDto commentRequestDto, Long postId, User currentUser) {
 
-        if (currentUser.isBlocked()) {
+        if (currentUser.getIsBlocked()) {
             throw new IllegalStateException("You are blocked and unable to make comments");
         }
 
@@ -119,7 +119,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public Post addLikesOnPost(Long postId, User currentUser) {
 
-        if (currentUser.isBlocked()) {
+        if (currentUser.getIsBlocked()) {
             throw new IllegalStateException("You are blocked and unable to make comments");
         }
 
@@ -137,7 +137,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public Post repost(Long postId, User currentUser) {
 
-        if (currentUser.isBlocked()) {
+        if (currentUser.getIsBlocked()) {
             throw new IllegalStateException("You are blocked and unable to repost");
         }
 

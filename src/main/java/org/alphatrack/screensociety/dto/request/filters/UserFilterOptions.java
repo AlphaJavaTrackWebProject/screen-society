@@ -5,7 +5,6 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.util.Optional;
-@Builder
 @AllArgsConstructor
 @Getter
 public class UserFilterOptions {
@@ -16,6 +15,8 @@ public class UserFilterOptions {
     private final Optional<String> sortBy;
     private final Optional<String> sortOrder;
 
+
+    @Builder
     public UserFilterOptions(String username,
                              String firstName,
                              String lastName,

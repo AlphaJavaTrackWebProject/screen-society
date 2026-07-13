@@ -67,9 +67,9 @@ public class UserRestController {
             @RequestParam(required = false) String firstName) {
 
         UserFilterOptions filterOptions = UserFilterOptions.builder()
-                .username(Optional.ofNullable(username))
-                .email(Optional.ofNullable(email))
-                .firstName(Optional.ofNullable(email))
+                .username(username)
+                .email(email)
+                .firstName(firstName)
                 .build();
 
         return modelMapper.usersListToResponseDtoList(userService.searchUsers(filterOptions));
@@ -127,7 +127,7 @@ public class UserRestController {
 
         User targetUser = userService.getUserById(targetId);
 
-        if (targetUser.isBlocked()) {
+        if (targetUser.getIsBlocked()) {
             userService.unBlockUser(targetId);
         } else {
             userService.blockUser(targetId);

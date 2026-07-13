@@ -93,7 +93,7 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException("You cannot block another admin");
         }
         // TODO custom exception
-        user.setBlocked(true);
+        user.setIsBlocked(true);
         userRepository.save(user);
     }
 
@@ -102,7 +102,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public void unBlockUser(Long userId) {
         User user = getUserById(userId);
-        user.setBlocked(false);
+        user.setIsBlocked(false);
         userRepository.save(user);
     }
 

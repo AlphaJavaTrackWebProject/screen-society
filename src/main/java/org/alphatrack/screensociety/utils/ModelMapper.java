@@ -121,7 +121,7 @@ public class ModelMapper {
                 .lastName(user.getLastName())
                 .email(user.getEmail())
                 .role(user.getRole())
-                .isBlocked(user.isBlocked())
+                .isBlocked(user.getIsBlocked())
                 .build();
     }
 
