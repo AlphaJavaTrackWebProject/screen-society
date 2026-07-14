@@ -34,7 +34,7 @@ public class SpringSecurityConfig {
                         .requestMatchers("/auth/register").permitAll()
                         .anyRequest().authenticated()
                 )
-                .httpBasic(Customizer.withDefaults())
+                //.httpBasic(Customizer.withDefaults())
                 .formLogin(form -> form
                         .loginPage("/auth/login")
                         .permitAll());
