@@ -9,7 +9,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDate;
 import java.util.Optional;
 @Getter
-@Builder
 @AllArgsConstructor
 public class PostFilterOptions {
     private final Optional<String> authorUsername;
@@ -20,6 +19,7 @@ public class PostFilterOptions {
     private final Optional<String> sortBy;
     private final Optional<String> sortOrder;
 
+    @Builder
     public PostFilterOptions(String authorUsername,
                              String title,
                              @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate createdBefore,

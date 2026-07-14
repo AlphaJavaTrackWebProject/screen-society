@@ -89,13 +89,13 @@ public class UserRestController {
             @RequestParam(required = false) String sortOrder) {
 
         PostFilterOptions postFilterOptions = PostFilterOptions.builder()
-                .sortBy(Optional.ofNullable(sortBy))
-                .title(Optional.ofNullable(title))
-                .authorUsername(Optional.ofNullable(authorUsername))
-                .tagName(Optional.ofNullable(tagName))
-                .createdBefore(Optional.ofNullable(createdBefore))
-                .createdAfter(Optional.ofNullable(createdAfter))
-                .sortOrder(Optional.ofNullable(sortOrder))
+                .sortBy(sortBy)
+                .title(title)
+                .authorUsername(authorUsername)
+                .tagName(tagName)
+                .createdBefore(createdBefore)
+                .createdAfter(createdAfter)
+                .sortOrder(sortOrder)
                 .build();
 
         return modelMapper.postsToPostsDto(userService.getUserPosts(targetId, postFilterOptions));

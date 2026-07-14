@@ -38,7 +38,7 @@ public class PostRestController {
     public List<PostResponseDto> getAll(@RequestParam(required = false) String tagToFilter) {
 
         PostFilterOptions postFilterOptions = PostFilterOptions.builder()
-                .tagName(Optional.ofNullable(tagToFilter))
+                .tagName(tagToFilter)
                 .build();
 
         return modelMapper.postsToPostsDto(postService.searchPosts(postFilterOptions));
