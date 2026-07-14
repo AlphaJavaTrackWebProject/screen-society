@@ -10,6 +10,7 @@ import org.alphatrack.screensociety.dto.request.filters.PostFilterOptions;
 import org.alphatrack.screensociety.dto.response.PostResponseDto;
 import org.alphatrack.screensociety.models.Post;
 import org.alphatrack.screensociety.models.User;
+import org.alphatrack.screensociety.security.CustomUserDetails;
 import org.alphatrack.screensociety.services.contracts.PostService;
 import org.alphatrack.screensociety.utils.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,9 +55,9 @@ public class PostRestController {
     @Operation(summary = "Creates new post")
     @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR') or hasRole('USER')")
     @PostMapping
-    public PostResponseDto createPost(@Valid @RequestBody PostRequestDto postDTO, @AuthenticationPrincipal User currentUser) {
+    public PostResponseDto createPost(@Valid @RequestBody PostRequestDto postDTO, @AuthenticationPrincipal CustomUserDetails currentUser) {
 
-        Post newPost = postService.createPost(postDTO, currentUser);
+        Post newPost = postService.createPost(postDTO, currentUser.getUser());
 
         return modelMapper.postToPostResponseDto(newPost);
 
@@ -66,8 +67,8 @@ public class PostRestController {
     @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @PutMapping("/{targetId}")
     public PostResponseDto updatePost(@Valid @RequestBody PostUpdateRequestDto postUpdateDTO,
-                                      @PathVariable Long targetId, @AuthenticationPrincipal User currentUser) {
-        Post updatedPost = postService.updatePost(targetId,postUpdateDTO,currentUser);
+                                      @PathVariable Long targetId, @AuthenticationPrincipal CustomUserDetails currentUser) {
+        Post updatedPost = postService.updatePost(targetId,postUpdateDTO,currentUser.getUser());
 
         return modelMapper.postToPostResponseDto(updatedPost);
 
@@ -76,25 +77,25 @@ public class PostRestController {
     @Operation(summary = "Deletes a post, Admin,owner or moderator only")
     @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR') or hasRole('USER')")
     @DeleteMapping("/{targetId}")
-    public void deletePost(@PathVariable Long targetId, @AuthenticationPrincipal User currentUser) {
+    public void deletePost(@PathVariable Long targetId, @AuthenticationPrincipal CustomUserDetails currentUser) {
 
-        postService.deletePost(targetId, currentUser);
+        postService.deletePost(targetId, currentUser.getUser());
     }
 
     @Operation(summary = "Adds a comment to specific post")
     @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR') or hasRole('USER')")
     @PostMapping("/{targetId}/comment")
-    public void comment(@PathVariable Long targetId, @AuthenticationPrincipal User currentUser, @RequestBody CommentRequestDto commentDTO) {
+    public void comment(@PathVariable Long targetId, @AuthenticationPrincipal CustomUserDetails currentUser, @RequestBody CommentRequestDto commentDTO) {
 
-        postService.addCommentOnPost(commentDTO, targetId, currentUser);
+        postService.addCommentOnPost(commentDTO, targetId, currentUser.getUser());
 
     }
 
     @Operation(summary = "Adds a like to a specific post")
     @PreAuthorize("hasRole('ADMIN') or hasRole('MODERATOR') or hasRole('USER')")
     @PutMapping("/{targetId}/like")
-    public void likePost(@PathVariable Long targetId, @AuthenticationPrincipal User currentUser) {
-        postService.addLikesOnPost(targetId, currentUser);
+    public void likePost(@PathVariable Long targetId, @AuthenticationPrincipal CustomUserDetails currentUser) {
+        postService.addLikesOnPost(targetId, currentUser.getUser());
     }
 
 }
