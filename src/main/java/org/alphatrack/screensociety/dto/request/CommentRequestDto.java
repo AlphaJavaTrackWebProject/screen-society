@@ -16,8 +16,5 @@ public class CommentRequestDto {
     @Size(min = 2, max = 255, message ="The comment length should be between 2 and 255 characters")
     private String content;
 
-    @NotBlank(message = "User name cannot be empty")
-    @Size(message = "The length of  User name should be between 4 and 32 characters")
-    private String authorUsername;
 
 }

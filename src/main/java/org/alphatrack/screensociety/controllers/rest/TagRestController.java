@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.alphatrack.screensociety.dto.request.TagRequestDto;
 import org.alphatrack.screensociety.dto.response.TagResponseDto;
-import org.alphatrack.screensociety.models.User;
+import org.alphatrack.screensociety.security.CustomUserDetails;
 import org.alphatrack.screensociety.services.contracts.TagService;
 import org.alphatrack.screensociety.utils.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,16 +52,17 @@ public class TagRestController {
     @Operation(summary = "Deletes a tag, ADMIN only")
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/{targetId}")
-    public void deleteTag(@PathVariable Long targetId, @AuthenticationPrincipal User currentUser) {
+    public void deleteTag(@PathVariable Long targetId, @AuthenticationPrincipal CustomUserDetails currentUser) {
 
         tagService.deleteTag(targetId);
 
     }
 
+
     @Operation(summary = "Edits a tag, ADMIN only")
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{targetId}")
-    public TagResponseDto editTag(@PathVariable Long targetId, @RequestBody TagRequestDto tagDTO) {
+    public TagResponseDto editTag(@PathVariable Long targetId, @RequestBody TagRequestDto tagDTO, @AuthenticationPrincipal CustomUserDetails currentUser) {
 
         return modelMapper.tagToTagDto(tagService.editTag(targetId,tagDTO));
 

@@ -1,6 +1,7 @@
 package org.alphatrack.screensociety.services;
 
 import com.sun.jdi.request.DuplicateRequestException;
+import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import org.alphatrack.screensociety.dto.request.TagRequestDto;
 import org.alphatrack.screensociety.models.Tag;
@@ -54,6 +55,12 @@ public class TagServiceImpl implements TagService {
         String formattedTagName = tagRequestDto.getName().toLowerCase().trim();
 
         Tag tagToUpdate = tagRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Tag not found"));
+
+        tagRepository.findByName(formattedTagName).ifPresent(existingTag -> {
+            if (!existingTag.getId().equals(id)) {
+                throw new EntityExistsException("Tag name already exists");
+            }
+        });
 
         tagToUpdate.setName(formattedTagName);
 

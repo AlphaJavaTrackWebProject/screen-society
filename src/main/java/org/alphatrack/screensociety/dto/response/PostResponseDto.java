@@ -26,5 +26,6 @@ public class PostResponseDto {
 
     private List<CommentResponseDto> commentList;
 
+    private Integer likesCount;
 
 }

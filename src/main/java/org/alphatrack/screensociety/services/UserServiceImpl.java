@@ -56,25 +56,23 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public User updateProfile(UserUpdateDto userUpdateDto, User currentUser, Long userid) {
+    public User updateProfile(UserUpdateDto userUpdateDto, User currentUser, Long targetId) {
 
-        boolean isOwner = currentUser.getId().equals(userid);
-
-
-        if (!isOwner) {
+        if (!currentUser.getId().equals(targetId)) {
             throw new AccessDeniedException("Only the owner can edit this account.");
         }
 
+        User userToUpdate = getUserById(targetId);
+
         if (userUpdateDto.getFirstName() != null) {
-            currentUser.setFirstName(userUpdateDto.getFirstName());
+            userToUpdate.setFirstName(userUpdateDto.getFirstName());
         }
 
         if (userUpdateDto.getLastName() != null) {
-            currentUser.setLastName(userUpdateDto.getLastName());
+            userToUpdate.setLastName(userUpdateDto.getLastName());
         }
-        // TODO custom exceptions
 
-        return userRepository.save(currentUser);
+        return userRepository.save(userToUpdate);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -134,12 +132,11 @@ public class UserServiceImpl implements UserService {
         boolean isAdmin = currentUser.getRole().equals(Role.ADMIN);
         boolean isOwner = currentUser.getId().equals(id);
 
-
         if (!isOwner && !isAdmin) {
             throw new AccessDeniedException("Only the author or an admin can delete this account.");
         }
 
-        userRepository.delete(getUserById(id)); //TODO Discuss
+        userRepository.delete(getUserById(id)); //TODO cascade
     }
 
     @Override

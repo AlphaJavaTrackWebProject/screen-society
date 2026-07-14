@@ -12,7 +12,7 @@ import java.util.List;
 public interface UserService {
     User registerUser(UserRegistrationDto userRegistrationDto);
 
-    User updateProfile(UserUpdateDto userUpdateDto, User currentUser,Long userId);
+    User updateProfile(UserUpdateDto userUpdateDto, User currentUser,Long targetId);
 
     List<Post> getUserPosts(Long userId, PostFilterOptions filterOptions);
 

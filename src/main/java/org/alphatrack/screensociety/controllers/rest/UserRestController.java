@@ -11,6 +11,7 @@ import org.alphatrack.screensociety.dto.response.PostResponseDto;
 import org.alphatrack.screensociety.dto.response.UserResponseDto;
 import org.alphatrack.screensociety.models.User;
 
+import org.alphatrack.screensociety.security.CustomUserDetails;
 import org.alphatrack.screensociety.services.contracts.UserService;
 import org.alphatrack.screensociety.utils.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -105,18 +106,18 @@ public class UserRestController {
     @Operation(summary = "Deletes an existing user")
     @PreAuthorize("hasRole('ADMIN') or #currentUser.id == #targetId ")
     @DeleteMapping("/{targetId}")
-    public void deleteUser(@PathVariable Long targetId, @AuthenticationPrincipal User currentUser) {
+    public void deleteUser(@PathVariable Long targetId, @AuthenticationPrincipal CustomUserDetails currentUser) {
 
-        userService.removeUser(targetId, currentUser);
+        userService.removeUser(targetId, currentUser.getUser());
     }
 
     @Operation(summary = "Editing a specific user")
-    @PreAuthorize("hasRole('ADMIN') or #currentUser.id == #targetId ")
+    @PreAuthorize("#currentUser.id == #targetId")
     @PutMapping("/{targetId}")
     public UserResponseDto updateUser(@Valid @RequestBody UserUpdateDto userUpdateDto,
-                                      @AuthenticationPrincipal User currentUser, @PathVariable Long targetId) {
+                                      @AuthenticationPrincipal CustomUserDetails currentUser, @PathVariable Long targetId) {
 
-        return modelMapper.userToUserDto(userService.updateProfile(userUpdateDto, currentUser, targetId));
+        return modelMapper.userToUserDto(userService.updateProfile(userUpdateDto, currentUser.getUser(), targetId));
 
     }
 
