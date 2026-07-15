@@ -1,8 +1,9 @@
 package org.alphatrack.screensociety.services;
 
-import jakarta.persistence.EntityNotFoundException;
 import org.alphatrack.screensociety.dto.request.CommentRequestDto;
 import org.alphatrack.screensociety.dto.request.filters.CommentFilterOptions;
+import org.alphatrack.screensociety.exceptions.AuthorizationFailureException;
+import org.alphatrack.screensociety.exceptions.EntityNotFoundException;
 import org.alphatrack.screensociety.models.Comment;
 import org.alphatrack.screensociety.models.User;
 import org.alphatrack.screensociety.models.enums.Role;
@@ -33,7 +34,7 @@ public class CommentServiceImpl implements CommentService {
     @Override
     public Comment getCommentById(Long commentId) {
         return commentRepository.findById(commentId)
-                .orElseThrow(() -> new EntityNotFoundException(String.format("Comment with id %d does not exist.", commentId)));
+                .orElseThrow(() -> new EntityNotFoundException("Comment","Id",String.valueOf(commentId)));
     }
 
     @Transactional
@@ -44,7 +45,7 @@ public class CommentServiceImpl implements CommentService {
         boolean isOwner = comment.getAuthor().equals(currentUser);
 
         if (!isOwner) {
-            throw new AccessDeniedException("You can only edit your own comments.");
+            throw new AuthorizationFailureException("You can only edit your own comments.");
         }
 
         comment.setContent(dto.getContent());
@@ -61,7 +62,7 @@ public class CommentServiceImpl implements CommentService {
         boolean isAdmin = currentUser.getRole().equals(Role.ADMIN);
 
         if (!isOwner && !isAdmin) {
-            throw new AccessDeniedException("Only the author or an Admin can delete this comment");
+            throw new AuthorizationFailureException("Only the author or an Admin can delete this comment");
         }
 
         comment.getPost().removeComment(comment);
@@ -76,7 +77,7 @@ public class CommentServiceImpl implements CommentService {
         boolean isOwner = comment.getAuthor().equals(currentUser);
 
         if (!isOwner) {
-            throw new AccessDeniedException("Only the author can edit this comment");
+            throw new AuthorizationFailureException("Only the author can edit this comment");
         }
 
         return comment;

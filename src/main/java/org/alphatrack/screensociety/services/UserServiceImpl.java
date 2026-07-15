@@ -6,13 +6,14 @@ import org.alphatrack.screensociety.dto.request.UserRegistrationDto;
 import org.alphatrack.screensociety.dto.request.UserUpdateDto;
 import org.alphatrack.screensociety.dto.request.filters.PostFilterOptions;
 import org.alphatrack.screensociety.dto.request.filters.UserFilterOptions;
+import org.alphatrack.screensociety.exceptions.AuthorizationFailureException;
+import org.alphatrack.screensociety.exceptions.DuplicateEntityException;
 import org.alphatrack.screensociety.models.Post;
 import org.alphatrack.screensociety.models.User;
 import org.alphatrack.screensociety.models.enums.Role;
 import org.alphatrack.screensociety.repositories.contracts.PostRepository;
 import org.alphatrack.screensociety.repositories.contracts.UserRepository;
 import org.alphatrack.screensociety.services.contracts.UserService;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -35,10 +36,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public User registerUser(UserRegistrationDto userRegistrationDto) {
         if (userRepository.findUserByUsername(userRegistrationDto.getUsername()).isPresent()) {
-            throw new IllegalArgumentException("Username is already taken");
+            throw new DuplicateEntityException("User", "username", userRegistrationDto.getUsername());
         }
         if (userRepository.findUserByEmail(userRegistrationDto.getEmail()).isPresent()) {
-            throw new IllegalArgumentException("Email is already registered");
+            throw new DuplicateEntityException("User", "email", userRegistrationDto.getEmail());
         }
 
         User newUser = User.builder()
@@ -56,23 +57,24 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public User updateProfile(UserUpdateDto userUpdateDto, User currentUser, Long targetId) {
+    public User updateProfile(UserUpdateDto userUpdateDto, User currentUser, Long userid) {
 
-        if (!currentUser.getId().equals(targetId)) {
-            throw new AccessDeniedException("Only the owner can edit this account.");
+        boolean isOwner = currentUser.getId().equals(userid);
+
+
+        if (!isOwner) {
+            throw new AuthorizationFailureException("Only the owner can edit this account.");
         }
 
-        User userToUpdate = getUserById(targetId);
-
         if (userUpdateDto.getFirstName() != null) {
-            userToUpdate.setFirstName(userUpdateDto.getFirstName());
+            currentUser.setFirstName(userUpdateDto.getFirstName());
         }
 
         if (userUpdateDto.getLastName() != null) {
-            userToUpdate.setLastName(userUpdateDto.getLastName());
+            currentUser.setLastName(userUpdateDto.getLastName());
         }
 
-        return userRepository.save(userToUpdate);
+        return userRepository.save(currentUser);
     }
 
     @Override
@@ -86,9 +88,9 @@ public class UserServiceImpl implements UserService {
         User user = getUserById(userId);
 
         if (user.getRole() == Role.ADMIN) {
-            throw new IllegalArgumentException("You cannot block another admin");
+            throw new AuthorizationFailureException("You cannot block another admin");
         }
-        // TODO custom exception
+
         user.setIsBlocked(true);
         userRepository.save(user);
     }
@@ -118,7 +120,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<Post> getUserPosts(Long userId, PostFilterOptions filterOptions) {
 
-    return postRepository.findAll(userId,filterOptions);
+        return postRepository.findAll(userId, filterOptions);
 
     }
 
@@ -128,11 +130,12 @@ public class UserServiceImpl implements UserService {
         boolean isAdmin = currentUser.getRole().equals(Role.ADMIN);
         boolean isOwner = currentUser.getId().equals(id);
 
+
         if (!isOwner && !isAdmin) {
-            throw new AccessDeniedException("Only the author or an admin can delete this account.");
+            throw new AuthorizationFailureException("Only the author or an admin can delete this account.");
         }
 
-        userRepository.delete(getUserById(id)); //TODO cascade
+        userRepository.delete(getUserById(id));
     }
 
     @Override

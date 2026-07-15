@@ -1,9 +1,8 @@
 package org.alphatrack.screensociety.services;
 
-import com.sun.jdi.request.DuplicateRequestException;
-import jakarta.persistence.EntityExistsException;
-import jakarta.persistence.EntityNotFoundException;
 import org.alphatrack.screensociety.dto.request.TagRequestDto;
+import org.alphatrack.screensociety.exceptions.DuplicateEntityException;
+import org.alphatrack.screensociety.exceptions.EntityNotFoundException;
 import org.alphatrack.screensociety.models.Tag;
 import org.alphatrack.screensociety.repositories.contracts.TagRepository;
 import org.alphatrack.screensociety.services.contracts.TagService;
@@ -35,7 +34,7 @@ public class TagServiceImpl implements TagService {
         String formattedTagName = tagRequestDto.getName().toLowerCase().trim();
 
         if (tagRepository.findByName(formattedTagName).isPresent()) {
-            throw new DuplicateRequestException("Tag with such name already exist");
+            throw new DuplicateEntityException("Tag","name",formattedTagName);
         } else {
             return tagRepository.save(Tag.builder()
                     .name(formattedTagName)
@@ -54,13 +53,8 @@ public class TagServiceImpl implements TagService {
 
         String formattedTagName = tagRequestDto.getName().toLowerCase().trim();
 
-        Tag tagToUpdate = tagRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Tag not found"));
-
-        tagRepository.findByName(formattedTagName).ifPresent(existingTag -> {
-            if (!existingTag.getId().equals(id)) {
-                throw new EntityExistsException("Tag name already exists");
-            }
-        });
+        Tag tagToUpdate = tagRepository.findById(id).orElseThrow(() ->
+                new EntityNotFoundException("Tag","Id",String.valueOf(id)));
 
         tagToUpdate.setName(formattedTagName);
 
@@ -69,6 +63,7 @@ public class TagServiceImpl implements TagService {
 
     @Override
     public Tag getByName(String tagName) {
-        return tagRepository.findByName(tagName).orElseThrow(() -> new EntityNotFoundException("Tag not found"));
+        return tagRepository.findByName(tagName).orElseThrow(() ->
+                new EntityNotFoundException("Tag","name",tagName));
     }
 }
