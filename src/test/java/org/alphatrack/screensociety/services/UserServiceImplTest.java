@@ -138,7 +138,6 @@ public class UserServiceImplTest {
         Mockito.when(userRepository.findAll(filterOptions))
                 .thenReturn(List.of(mockUser));
 
-
         List<User> testUsers = userService.searchUsers(filterOptions);
 
         Assertions.assertEquals("ivanov", testUsers.get(0).getLastName());
