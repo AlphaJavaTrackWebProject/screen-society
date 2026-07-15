@@ -33,6 +33,7 @@ public class ModelMapper {
                 .content(post.getContent())
                 .commentList(commentsToCommentsDto(post.getCommentList()))
                 .tags(tagsToTagsDto(post.getTags()))
+                .likesCount(post.getLikedByUsers().size())
                 .build();
     }
 
@@ -55,7 +56,6 @@ public class ModelMapper {
     public CommentRequestDto commentToCommentRequestDto(Comment comment){
 
         return CommentRequestDto.builder()
-                .authorUsername(comment.getAuthor().getUsername())
                 .content(comment.getContent())
                 .build();
     }

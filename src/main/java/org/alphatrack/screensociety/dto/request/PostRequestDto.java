@@ -24,10 +24,4 @@ public class PostRequestDto {
     @Size(min = 32,max = 8192,message = "description size should be between 32 and 8192 characters")
     private String content;
 
-    @NotBlank(message = "User name cannot be empty")
-    @Size(message = "The length of  User name should be between 4 and 32 characters")
-    private String authorUsername;
-
-
-
 }
