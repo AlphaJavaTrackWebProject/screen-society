@@ -75,13 +75,11 @@ public class UserServiceImpl implements UserService {
         return userRepository.save(userToUpdate);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @Override
     public List<User> searchUsers(UserFilterOptions options) {
         return userRepository.findAll(options);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @Transactional
     @Override
     public void blockUser(Long userId) {
@@ -95,7 +93,6 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @Transactional
     @Override
     public void unBlockUser(Long userId) {
@@ -104,7 +101,6 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @Transactional
     @Override
     public void promoteToAdmin(Long userId) {
