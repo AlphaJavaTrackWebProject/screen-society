@@ -1,12 +1,13 @@
 package org.alphatrack.screensociety.services;
 
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.alphatrack.screensociety.dto.request.CommentRequestDto;
 import org.alphatrack.screensociety.dto.request.PostRequestDto;
 import org.alphatrack.screensociety.dto.request.PostUpdateRequestDto;
 import org.alphatrack.screensociety.dto.request.TagRequestDto;
 import org.alphatrack.screensociety.dto.request.filters.PostFilterOptions;
+import org.alphatrack.screensociety.exceptions.AuthorizationFailureException;
+import org.alphatrack.screensociety.exceptions.EntityNotFoundException;
 import org.alphatrack.screensociety.models.Comment;
 import org.alphatrack.screensociety.models.Post;
 import org.alphatrack.screensociety.models.Tag;
@@ -45,7 +46,7 @@ public class PostServiceImpl implements PostService {
     public Post createPost(PostRequestDto postRequestDto, User currentUser) {
 
         if (currentUser.getIsBlocked()) {
-            throw new IllegalStateException("You are blocked and unable to create post");
+            throw new AuthorizationFailureException("You are blocked and unable to create post");
         }
 
         Post newPost = Post.builder()
@@ -67,7 +68,7 @@ public class PostServiceImpl implements PostService {
         boolean isOwner = post.getAuthor().equals(currentUser);
 
         if (!isOwner){
-            throw new AccessDeniedException("Only author / owner can edit it's post");
+            throw new AuthorizationFailureException("Only author / owner can edit it's post");
         }
 
         Set<Tag> tags = new HashSet<>();
@@ -100,7 +101,7 @@ public class PostServiceImpl implements PostService {
     public Post addCommentOnPost(CommentRequestDto commentRequestDto, Long postId, User currentUser) {
 
         if (currentUser.getIsBlocked()) {
-            throw new IllegalStateException("You are blocked and unable to make comments");
+            throw new AuthorizationFailureException("You are blocked and unable to make comments");
         }
 
         Post post = getByPostId(postId);
@@ -120,7 +121,7 @@ public class PostServiceImpl implements PostService {
     public Post addLikesOnPost(Long postId, User currentUser) {
 
         if (currentUser.getIsBlocked()) {
-            throw new IllegalStateException("You are blocked and unable to make comments");
+            throw new AuthorizationFailureException("You are blocked and unable to like posts");
         }
 
         Post post = getByPostId(postId);
@@ -138,7 +139,7 @@ public class PostServiceImpl implements PostService {
     public Post repost(Long postId, User currentUser) {
 
         if (currentUser.getIsBlocked()) {
-            throw new IllegalStateException("You are blocked and unable to repost");
+            throw new AuthorizationFailureException("You are blocked and unable to repost");
         }
 
         Post postToBeReposted = getByPostId(postId);
@@ -166,7 +167,7 @@ public class PostServiceImpl implements PostService {
         boolean isAdmin = currentUser.getRole().equals(Role.ADMIN);
 
         if (!isOwner && !isAdmin) {
-            throw new AccessDeniedException("Only the author or an admin can tag this post.");
+            throw new AuthorizationFailureException("Only the author or an admin can tag this post.");
         }
 
         String formattedTagName = tagRequestDto.getName().toLowerCase().trim();
@@ -209,7 +210,7 @@ public class PostServiceImpl implements PostService {
         boolean isAdmin = currentUser.getRole().equals(Role.ADMIN);
 
         if (!isOwner && !isAdmin) {
-            throw new AccessDeniedException("Only the author or an admin can delete a post");
+            throw new AuthorizationFailureException("Only the author or an admin can delete a post");
         }
 
         postRepository.delete(post);
@@ -218,7 +219,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public Post getByPostId(Long id) {
         return postRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(String.format("Post with id %d does not exist", id)));
+                .orElseThrow(() -> new EntityNotFoundException("Post","id",String.valueOf(id)));
     }
 
     @Override
@@ -228,7 +229,7 @@ public class PostServiceImpl implements PostService {
         boolean isOwner = post.getAuthor().equals(currentUser);
 
         if (!isOwner){
-            throw new AccessDeniedException("Only author can edit its post/s");
+            throw new AuthorizationFailureException("Only author can edit its post/s");
         }
 
         return post;

@@ -1,6 +1,6 @@
 package org.alphatrack.screensociety.services;
 
-import jakarta.persistence.EntityNotFoundException;
+import org.alphatrack.screensociety.exceptions.EntityNotFoundException;
 import org.alphatrack.screensociety.models.User;
 import org.alphatrack.screensociety.repositories.contracts.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +26,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findUserByUsername(username)
-                .orElseThrow(() -> new EntityNotFoundException(String.format("User with username %s not found", username)));
+                .orElseThrow(() -> new EntityNotFoundException("User","username",username));
 
         Set<GrantedAuthority> authorities = Set.of(
                 new SimpleGrantedAuthority("ROLE_" + user.getRole().name())
