@@ -1,6 +1,6 @@
 package org.alphatrack.screensociety.services;
 
-import jakarta.persistence.EntityNotFoundException;
+
 import jakarta.transaction.Transactional;
 import org.alphatrack.screensociety.dto.request.UserRegistrationDto;
 import org.alphatrack.screensociety.dto.request.UserUpdateDto;
@@ -8,6 +8,7 @@ import org.alphatrack.screensociety.dto.request.filters.PostFilterOptions;
 import org.alphatrack.screensociety.dto.request.filters.UserFilterOptions;
 import org.alphatrack.screensociety.exceptions.AuthorizationFailureException;
 import org.alphatrack.screensociety.exceptions.DuplicateEntityException;
+import org.alphatrack.screensociety.exceptions.EntityNotFoundException;
 import org.alphatrack.screensociety.models.Post;
 import org.alphatrack.screensociety.models.User;
 import org.alphatrack.screensociety.models.enums.Role;
@@ -114,7 +115,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getUserById(Long id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException(String.format("User with id %d not found", id)));
+                .orElseThrow(() -> new EntityNotFoundException("User","id",String.valueOf(id)));
     }
 
     @Override
@@ -141,7 +142,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getUserByUsername(String username) {
         return userRepository.findUserByUsername(username)
-                .orElseThrow(() -> new EntityNotFoundException(String.format("User with username %s not found", username)));
+                .orElseThrow(() -> new EntityNotFoundException("User","username",username));
     }
 
 
