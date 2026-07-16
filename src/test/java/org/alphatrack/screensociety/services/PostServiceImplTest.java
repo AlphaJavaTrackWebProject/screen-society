@@ -10,7 +10,6 @@ import org.alphatrack.screensociety.models.Post;
 import org.alphatrack.screensociety.models.Tag;
 import org.alphatrack.screensociety.models.User;
 import org.alphatrack.screensociety.models.enums.Role;
-import org.alphatrack.screensociety.repositories.contracts.CommentRepository;
 import org.alphatrack.screensociety.repositories.contracts.PostRepository;
 import org.alphatrack.screensociety.repositories.contracts.TagRepository;
 import org.junit.jupiter.api.Assertions;
