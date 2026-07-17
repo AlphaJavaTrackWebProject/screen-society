@@ -46,7 +46,7 @@ public class PostController {
     @GetMapping("/new")
     public String postCreateView(Model model) {
         model.addAttribute("post", new PostRequestDto());
-        return "PostCreateView";
+        return "postCreate";
     }
 
     @PostMapping("/new")

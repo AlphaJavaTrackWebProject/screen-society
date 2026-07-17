@@ -27,7 +27,7 @@ public class AuthenticationController {
 
     @GetMapping("/login")
     public String showLoginView (){
-        return "LoginView";
+        return "login";
     }
 
     @GetMapping("/register")
