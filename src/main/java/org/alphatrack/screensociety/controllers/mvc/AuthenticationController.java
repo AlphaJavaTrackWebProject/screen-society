@@ -3,6 +3,7 @@ package org.alphatrack.screensociety.controllers.mvc;
 
 import jakarta.validation.Valid;
 import org.alphatrack.screensociety.dto.request.UserRegistrationDto;
+import org.alphatrack.screensociety.exceptions.DuplicateEntityException;
 import org.alphatrack.screensociety.services.contracts.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -27,7 +28,7 @@ public class AuthenticationController {
 
     @GetMapping("/login")
     public String showLoginView (){
-        return "LoginView";
+        return "login";
     }
 
     @GetMapping("/register")
@@ -35,17 +36,27 @@ public class AuthenticationController {
 
         model.addAttribute("register",new UserRegistrationDto());
 
-        return "RegisterView";
+        return "register";
     }
 
     @PostMapping("/register")
     public String handleRegistration (@Valid @ModelAttribute("register") UserRegistrationDto registrationDto, BindingResult bindingResult){
 
         if (bindingResult.hasErrors()){
-            return "RegisterView";
+            return "register";
         }
 
-        userService.registerUser(registrationDto);
+        try {
+            userService.registerUser(registrationDto);
+        } catch (DuplicateEntityException e) {
+
+            if (e.getMessage().toLowerCase().contains("email")){
+                bindingResult.rejectValue("email", "error.email",e.getMessage());
+            }else {
+                bindingResult.rejectValue("username", "error.user",e.getMessage());
+            }
+            return "register";
+        }
 
         return "redirect:/";
     }

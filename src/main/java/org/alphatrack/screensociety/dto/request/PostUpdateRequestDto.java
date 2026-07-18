@@ -21,8 +21,8 @@ public class PostUpdateRequestDto {
     @Size(min = 10, max = 255, message = "description size should be between 10 and 255 characters")
     private String content;
 
+    @Size(min = 1, max = 5, message = "You must provide between 1 and 5 tags")
     private Set<
-            @NotEmpty(message = "Please provide a Tag name")
             @Size(min = 2, max = 10, message = "Tag name should be between 2 and 10 characters") String> tags;
 
 }
