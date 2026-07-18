@@ -32,10 +32,14 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
 
         List<Predicate> predicates = new ArrayList<>();
 
-        postFilterOptions.getTitle().ifPresent(title ->
+        postFilterOptions.getTitle()
+                .filter(title -> !title.isBlank())
+                .ifPresent(title ->
                 predicates.add(cb.like(postRoot.get("title"), "%" + title + "%")));
 
-        postFilterOptions.getAuthorUsername().ifPresent(authorUsername ->
+        postFilterOptions.getAuthorUsername()
+                .filter(authorUsername -> !authorUsername.isBlank())
+                .ifPresent(authorUsername ->
                 predicates.add(cb.like(postRoot.get("author").get("username"), authorUsername)));
 
         postFilterOptions.getCreatedAfter().ifPresent(afterDate ->
@@ -45,14 +49,18 @@ public class PostRepositoryImpl implements PostRepositoryCustom {
                 predicates.add(cb.lessThanOrEqualTo(postRoot.get("createdAt"), beforeDate.atTime(
                         23, 59, 59, 999999999))));
 
-        postFilterOptions.getTagName().ifPresent(tagName -> {
+        postFilterOptions.getTagName()
+                .filter(tagName -> !tagName.isBlank())
+                .ifPresent(tagName -> {
             Join<Post, Object> tagsJoin = postRoot.join("tags");
             predicates.add(cb.equal(tagsJoin.get("name"), tagName));
         });
 
         cq.where(cb.and(predicates.toArray(new Predicate[0])));
 
-        postFilterOptions.getSortBy().ifPresent(sortBy -> {
+        postFilterOptions.getSortBy()
+                .filter(sortBy -> !sortBy.isBlank())
+                .ifPresent(sortBy -> {
             String sortOrder = postFilterOptions.getSortOrder().orElse("asc");
             if (sortOrder.equalsIgnoreCase("desc")) {
                 cq.orderBy(cb.desc(postRoot.get(sortBy)));

@@ -67,27 +67,29 @@ public class PostServiceImpl implements PostService {
 
         boolean isOwner = post.getAuthor().equals(currentUser);
 
-        if (!isOwner){
+        if (!isOwner) {
             throw new AuthorizationFailureException("Only author / owner can edit it's post");
         }
 
         Set<Tag> tags = new HashSet<>();
 
-       for (String tagName : postUpdateRequestDto.getTags()){
+        if (postUpdateRequestDto.getTags() != null) {
+            for (String tagName : postUpdateRequestDto.getTags()) {
 
-           String formattedTagName = tagName.toLowerCase().trim();
+                String formattedTagName = tagName.toLowerCase().trim();
 
-           Tag tag = tagRepository.findByName(formattedTagName).orElseGet(() -> {
+                Tag tag = tagRepository.findByName(formattedTagName).orElseGet(() -> {
 
-               Tag newTag = Tag.builder()
-                       .name(formattedTagName)
-                       .build();
+                    Tag newTag = Tag.builder()
+                            .name(formattedTagName)
+                            .build();
 
-               return tagRepository.save(newTag);
-           });
+                    return tagRepository.save(newTag);
+                });
 
-           tags.add(tag);
-       }
+                tags.add(tag);
+            }
+        }
 
         post.setContent(postUpdateRequestDto.getContent());
         post.setTags(tags);
@@ -219,7 +221,7 @@ public class PostServiceImpl implements PostService {
     @Override
     public Post getByPostId(Long id) {
         return postRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("Post","id",String.valueOf(id)));
+                .orElseThrow(() -> new EntityNotFoundException("Post", "id", String.valueOf(id)));
     }
 
     @Override
@@ -228,7 +230,7 @@ public class PostServiceImpl implements PostService {
 
         boolean isOwner = post.getAuthor().equals(currentUser);
 
-        if (!isOwner){
+        if (!isOwner) {
             throw new AuthorizationFailureException("Only author can edit its post/s");
         }
 

@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
+    <title>Edit Post - Screen Society</title>
+    <link rel="icon" th:href="@{/images/Icon.png}">
+    <!-- Font Awesome icons (free version)-->
+    <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+    <!-- Google fonts-->
+    <link href="https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" rel="stylesheet"
+          type="text/css"/>
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800"
+          rel="stylesheet" type="text/css"/>
+    <!-- Core theme CSS (includes Bootstrap)-->
+    <link th:href="@{/css/styles.css}" rel="stylesheet"/>
+</head>
+<body>
+<!-- Navigation-->
+<nav class="navbar navbar-expand-lg navbar-light" id="mainNav">
+    <div class="container px-4 px-lg-5">
+        <a class="navbar-brand" th:href="@{/}">Screen Society</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive"
+                aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
+            Menu
+            <i class="fas fa-bars"></i>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarResponsive">
+            <ul class="navbar-nav ms-auto py-4 py-lg-0">
+                <th:block sec:authorize="isAnonymous()">
+                    <li class="nav-item">
+                        <a class="nav-link px-lg-3 py-3 py-lg-4" th:href="@{/auth/login}">Login</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link px-lg-3 py-3 py-lg-4" th:href="@{/auth/register}">Register</a>
+                    </li>
+                </th:block>
+                <li class="nav-item">
+                    <a class="nav-link px-lg-3 py-3 py-lg-4" th:href="@{/}">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link px-lg-3 py-3 py-lg-4" th:href="@{/about}">About</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link px-lg-3 py-3 py-lg-4" th:href="@{/contact}">Contact</a>
+                </li>
+                <li class="nav-item" sec:authorize="isAuthenticated()">
+                    <a class="nav-link px-lg-3 py-3 py-lg-4" th:href="@{/posts/new}">Create Post</a>
+                </li>
+                <li class="nav-item" sec:authorize="isAuthenticated()">
+                    <a class="nav-link px-lg-3 py-3 py-lg-4" th:href="@{/posts}">Explore</a>
+                </li>
+                <li class="nav-item" sec:authorize="hasAnyRole('ADMIN','MODERATOR')">
+                    <a class="nav-link px-lg-3 py-3 py-lg-4" th:href="@{/admin/panel}">Admin Panel</a>
+                </li>
+                <li class="nav-item" sec:authorize="isAuthenticated()">
+                    <a class="nav-link px-lg-3 py-3 py-lg-4" th:href="@{/logout}">Logout</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- Page Header-->
+<header class="masthead" th:style="'background-image: url(' + @{/assets/img/home-bg.jpg} + ')'">
+    <div class="container position-relative px-4 px-lg-5">
+        <div class="row gx-4 gx-lg-5 justify-content-center">
+            <div class="col-md-10 col-lg-8 col-xl-7">
+                <div class="site-heading">
+                    <h1>Edit Post</h1>
+                    <span class="subheading">Refine your thoughts before pressing the button!</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+<!-- Main Content-->
+<div class="container px-4 px-lg-5">
+    <div class="row gx-4 gx-lg-5 justify-content-center">
+        <div class="col-md-10 col-lg-8 col-xl-7">
+            <form th:action="@{/posts/{id}/update(id=${postUpdateId})}" th:object="${postUpdate}" method="post"
+                  class="row g-3 mb-5 p-4 bg-light rounded shadow-sm">
+
+                <div class="form-floating mb-3">
+                    <input class="form-control" id="title" type="text" placeholder="Enter post title..."
+                           th:field="*{title}"/>
+                    <label for="title">Post Title</label>
+                    <div class="text-danger" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></div>
+                </div>
+
+                <div class="form-floating mb-3">
+                    <textarea class="form-control" id="content" placeholder="Write your content here..."
+                              style="height: 12rem" th:field="*{content}"></textarea>
+                    <label for="content">Content</label>
+                    <div class="text-danger" th:if="${#fields.hasErrors('content')}" th:errors="*{content}"></div>
+                </div>
+
+                <small class="text-muted d-block mb-2">Each tag must be 2-10 characters long.</small>
+
+                <div class="form-floating mb-3">
+                    <input class="form-control" id="tags" type="text"
+                           placeholder="Tags (comma separated)"
+                           th:field="*{tags}"/>
+                    <label for="tags">Tags (comma separated)</label>
+
+                    <!-- This catches the Set size error -->
+                    <div class="text-danger" th:if="${#fields.hasErrors('tags')}" th:errors="*{tags}"></div>
+                </div>
+                <button class="btn btn-primary text-uppercase d-block mx-auto" type="submit">Save changes</button>
+
+
+            </form>
+
+            <!-- ========================================================= -->
+            <!-- BRO, YOUR MISSION STARTS HERE                             -->
+            <!-- 1. Open a <form> tag mapping to your update endpoint      -->
+            <!-- 2. Bind your DTO using th:object="${postUpdate}"          -->
+            <!-- 3. Build your inputs mapped with th:field                 -->
+            <!-- 4. Add a submit button to fire it to your @PostMapping    -->
+            <!-- ========================================================= -->
+
+
+        </div>
+    </div>
+</div>
+
+<!-- Footer-->
+<footer class="border-top">
+    <div class="container px-4 px-lg-5">
+        <div class="row gx-4 gx-lg-5 justify-content-center">
+            <div class="col-md-10 col-lg-8 col-xl-7">
+                <ul class="list-inline text-center">
+                    <li class="list-inline-item">
+                        <a href="#!">
+                            <span class="fa-stack fa-lg">
+                                <i class="fas fa-circle fa-stack-2x"></i>
+                                <i class="fab fa-twitter fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    <li class="list-inline-item">
+                        <a href="#!">
+                            <span class="fa-stack fa-lg">
+                                <i class="fas fa-circle fa-stack-2x"></i>
+                                <i class="fab fa-facebook-f fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                    <li class="list-inline-item">
+                        <a href="#!">
+                            <span class="fa-stack fa-lg">
+                                <i class="fas fa-circle fa-stack-2x"></i>
+                                <i class="fab fa-github fa-stack-1x fa-inverse"></i>
+                            </span>
+                        </a>
+                    </li>
+                </ul>
+                <div class="small text-center text-muted fst-italic">Copyright &copy; Screen Society 2026</div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- Bootstrap core JS-->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Core theme JS-->
+<script th:src="@{/js/scripts.js}"></script>
+</body>
+</html>

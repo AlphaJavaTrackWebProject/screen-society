@@ -9,7 +9,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.time.LocalDate;
 import java.util.Optional;
 @Getter
-@AllArgsConstructor
+//@AllArgsConstructor
 public class PostFilterOptions {
     private final Optional<String> authorUsername;
     private final Optional<String> title;
