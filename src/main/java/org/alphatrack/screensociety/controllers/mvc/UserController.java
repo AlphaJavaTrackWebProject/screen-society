@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import org.alphatrack.screensociety.dto.request.UserRegistrationDto;
 import org.alphatrack.screensociety.dto.request.UserUpdateDto;
 import org.alphatrack.screensociety.models.User;
+import org.alphatrack.screensociety.security.CustomUserDetails;
 import org.alphatrack.screensociety.services.contracts.UserService;
 import org.alphatrack.screensociety.utils.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +30,11 @@ public class UserController {
     @GetMapping("/{id}")
     public String userView (@PathVariable Long id, Model model){
 
-        model.addAttribute("register", modelMapper.userToUserDto(userService.getUserById(id)));
+        User requestedUser = userService.getUserById(id);
+
+        model.addAttribute("user", modelMapper.userToUserDto(requestedUser));
+        model.addAttribute("username", requestedUser.getUsername());
+        model.addAttribute("posts", requestedUser.getPosts());
 
         return "UserView";
     }
@@ -44,13 +49,13 @@ public class UserController {
 
     @PostMapping("/{id}/update")
     public String handleUpdate(@PathVariable Long id, @Valid @ModelAttribute("user") UserUpdateDto userUpdateDto,
-                               BindingResult bindingResult, @AuthenticationPrincipal User currentUser){
+                               BindingResult bindingResult, @AuthenticationPrincipal CustomUserDetails currentUser){
 
         if (bindingResult.hasErrors()){
             return "UserUpdateView";
         }
 
-        userService.updateProfile(userUpdateDto, currentUser,id);
+        userService.updateProfile(userUpdateDto, currentUser.getUser(),id);
 
         return "redirect:/users/" + id;
     }

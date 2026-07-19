@@ -45,7 +45,7 @@ public class CommentController {
     }
 
     @PostMapping("/{id}/update")
-    public String editComment(@PathVariable Long id, @AuthenticationPrincipal User currentUser,
+    public String editComment(@PathVariable Long id, @AuthenticationPrincipal CustomUserDetails currentUser,
                               @Valid @ModelAttribute("comment") CommentRequestDto commentRequestDto, BindingResult bindingResult) {
 
         if (bindingResult.hasErrors()) {
@@ -54,17 +54,17 @@ public class CommentController {
 
         Long postId = commentService.getCommentById(id).getPost().getId();
 
-        commentService.updateComment(id, commentRequestDto, currentUser);
+        commentService.updateComment(id, commentRequestDto, currentUser.getUser());
 
         return "redirect:/posts/" + postId;
     }
 
     @PostMapping("/{id}/delete")
-    public String deleteComment(@PathVariable Long id, @AuthenticationPrincipal User currentUser) {
+    public String deleteComment(@PathVariable Long id, @AuthenticationPrincipal CustomUserDetails currentUser) {
 
         Long postId = commentService.getCommentById(id).getPost().getId();
 
-        commentService.deleteComment(id, currentUser);
+        commentService.deleteComment(id, currentUser.getUser());
 
         return "redirect:/posts/" + postId;
     }

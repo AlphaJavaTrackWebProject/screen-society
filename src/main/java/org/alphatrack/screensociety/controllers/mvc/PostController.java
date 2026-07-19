@@ -108,7 +108,7 @@ public class PostController {
 
     @PostMapping("/{postId}/comment")
     public String addComment(@PathVariable Long postId, @AuthenticationPrincipal CustomUserDetails currentUser,
-                             @Valid @ModelAttribute CommentRequestDto commentRequestDto, BindingResult bindingResult,
+                             @Valid @ModelAttribute("comment") CommentRequestDto commentRequestDto, BindingResult bindingResult,
                              Model model) {
         if (bindingResult.hasErrors()) {
             model.addAttribute("post", postService.getByPostId(postId));
