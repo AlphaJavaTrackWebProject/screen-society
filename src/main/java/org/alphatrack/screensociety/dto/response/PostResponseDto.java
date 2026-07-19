@@ -3,6 +3,7 @@ package org.alphatrack.screensociety.dto.response;
 import lombok.*;
 
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -27,5 +28,7 @@ public class PostResponseDto {
     private List<CommentResponseDto> commentList;
 
     private Integer likesCount;
+
+    private LocalDateTime createdAt;
 
 }

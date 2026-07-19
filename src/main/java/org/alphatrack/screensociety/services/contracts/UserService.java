@@ -24,6 +24,12 @@ public interface UserService {
 
     void promoteToAdmin(Long userId);
 
+    void promoteToModerator(Long userId);
+
+    void demoteToModerator(Long userId);
+
+    void demoteToUser(Long userId);
+
     User getUserById(Long id);
 
     void removeUser(Long id, User currentUser);

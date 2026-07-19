@@ -34,6 +34,7 @@ public class ModelMapper {
                 .commentList(commentsToCommentsDto(post.getCommentList()))
                 .tags(tagsToTagsDto(post.getTags()))
                 .likesCount(post.getLikedByUsers().size())
+                .createdAt(post.getCreatedAt())
                 .build();
     }
 

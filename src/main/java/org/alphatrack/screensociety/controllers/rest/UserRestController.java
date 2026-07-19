@@ -135,10 +135,25 @@ public class UserRestController {
         }
     }
 
-    @Operation(summary = "Changes a specific user's role, ADMIN only")
+    @Operation(summary = "Promotes a user to ADMIN, ADMIN only")
     @PreAuthorize("hasRole('ADMIN')")
-    @PutMapping("/{targetId}/role")
-    public void changeUserRole(@PathVariable Long targetId) {
+    @PutMapping("/{targetId}/promote-admin")
+    public void promoteToAdmin(@PathVariable Long targetId) {
         userService.promoteToAdmin(targetId);
     }
+
+    @Operation(summary = "Promotes a user to MODERATOR, ADMIN only")
+    @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping("/{targetId}/promote-mod")
+    public void promoteToModerator(@PathVariable Long targetId) {
+        userService.promoteToModerator(targetId);
+    }
+
+    @Operation(summary = "Demotes a user to standard USER, ADMIN only")
+    @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping("/{targetId}/demote-user")
+    public void demoteToUser(@PathVariable Long targetId) {
+        userService.demoteToUser(targetId);
+    }
+
 }

@@ -17,6 +17,7 @@
     <span sec:authorize="isAuthenticated()">
         <a href="/posts">All Posts</a> |
         <a href="/posts/new">Create Post</a> |
+        <a th:href="@{/users/{id}/update(id=${#authentication.principal.user.id})}">Edit Profile</a> |
         <a href="/logout">Logout</a>
     </span>
 
