@@ -4,6 +4,7 @@
     <meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"/>
     <title th:text="${post.title}">Post Details</title>
+    <link rel="icon" th:href="@{/images/Icon.png}">
     <link th:href="@{/css/styles.css}" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css?family=Lora:400,700,400italic,700italic" rel="stylesheet"
           type="text/css"/>
@@ -95,7 +96,9 @@
     <h3>Comments</h3>
     <div th:each="comment : ${post.commentList}" class="mb-3 p-2 border-bottom">
         <p>
-            <strong th:text="${comment.author.username}">Author</strong>:
+            <a th:href="@{/users/{id}(id=${comment.author.id})}" class="text-decoration-none">
+                <strong th:text="${comment.author.username}">Author</strong>
+            </a>:
             <span th:text="${comment.content}">Comment text</span>
         </p>
 
