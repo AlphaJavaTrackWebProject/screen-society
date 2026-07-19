@@ -112,6 +112,30 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
     }
 
+    @Transactional
+    @Override
+    public void promoteToModerator(Long userId) {
+        User user = getUserById(userId);
+        user.setRole(Role.MODERATOR);
+        userRepository.save(user);
+    }
+
+    @Transactional
+    @Override
+    public void demoteToModerator(Long userId) {
+        User user = getUserById(userId);
+        user.setRole(Role.MODERATOR);
+        userRepository.save(user);
+    }
+
+    @Transactional
+    @Override
+    public void demoteToUser(Long userId) {
+        User user = getUserById(userId);
+        user.setRole(Role.USER);
+        userRepository.save(user);
+    }
+
     @Override
     public User getUserById(Long id) {
         return userRepository.findById(id)

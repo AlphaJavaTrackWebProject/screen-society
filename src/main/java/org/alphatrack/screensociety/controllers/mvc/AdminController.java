@@ -3,6 +3,7 @@ package org.alphatrack.screensociety.controllers.mvc;
 import org.alphatrack.screensociety.dto.request.filters.PostFilterOptions;
 import org.alphatrack.screensociety.dto.request.filters.UserFilterOptions;
 import org.alphatrack.screensociety.models.User;
+import org.alphatrack.screensociety.security.CustomUserDetails;
 import org.alphatrack.screensociety.services.contracts.PostService;
 import org.alphatrack.screensociety.services.contracts.UserService;
 import org.alphatrack.screensociety.utils.ModelMapper;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/admin")
@@ -47,18 +49,22 @@ public class AdminController {
 
 
     @PostMapping("/{targetUser}/block")
-    public String blockUser(@PathVariable Long targetUser) {
-
-        userService.blockUser(targetUser);
-
+    public String blockUser(@PathVariable Long targetUser, RedirectAttributes redirectAttributes) {
+        try {
+            userService.blockUser(targetUser);
+        } catch (RuntimeException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+        }
         return "redirect:/admin/users";
     }
 
     @PostMapping("/{targetUser}/unblock")
-    public String unblockUser(@PathVariable Long targetUser) {
-
-        userService.unBlockUser(targetUser);
-
+    public String unblockUser(@PathVariable Long targetUser, RedirectAttributes redirectAttributes) {
+        try {
+            userService.unBlockUser(targetUser);
+        } catch (RuntimeException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+        }
         return "redirect:/admin/users";
     }
 
@@ -72,11 +78,55 @@ public class AdminController {
 
     @PostMapping("/{targetPost}/delete")
     @PreAuthorize("hasRole('ADMIN')")
-    public String deletePost(@PathVariable Long targetPost, @AuthenticationPrincipal User currentUser) {
+    public String deletePost(@PathVariable Long targetPost, @AuthenticationPrincipal CustomUserDetails currentUser) {
 
-        postService.deletePost(targetPost, currentUser);
+        postService.deletePost(targetPost, currentUser.getUser());
 
         return "redirect:/admin/posts";
+    }
+
+    @PostMapping("/{targetUser}/promote")
+    @PreAuthorize("hasRole('ADMIN')")
+    public String promoteUser(@PathVariable Long targetUser, RedirectAttributes redirectAttributes) {
+        try {
+            userService.promoteToAdmin(targetUser);
+        } catch (RuntimeException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+        }
+        return "redirect:/admin/users";
+    }
+
+    @PostMapping("/{targetUser}/promote-mod")
+    @PreAuthorize("hasRole('ADMIN')")
+    public String promoteToModerator(@PathVariable Long targetUser, RedirectAttributes redirectAttributes) {
+        try {
+            userService.promoteToModerator(targetUser);
+        } catch (RuntimeException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+        }
+        return "redirect:/admin/users";
+    }
+
+    @PostMapping("/{targetUser}/demote-mod")
+    @PreAuthorize("hasRole('ADMIN')")
+    public String demoteToModerator(@PathVariable Long targetUser, RedirectAttributes redirectAttributes) {
+        try {
+            userService.demoteToModerator(targetUser);
+        } catch (RuntimeException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+        }
+        return "redirect:/admin/users";
+    }
+
+    @PostMapping("/{targetUser}/demote-user")
+    @PreAuthorize("hasRole('ADMIN')")
+    public String demoteToUser(@PathVariable Long targetUser, RedirectAttributes redirectAttributes) {
+        try {
+            userService.demoteToUser(targetUser);
+        } catch (RuntimeException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+        }
+        return "redirect:/admin/users";
     }
 
 }

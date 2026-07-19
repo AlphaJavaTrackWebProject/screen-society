@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.util.Optional;
-@AllArgsConstructor
+
 @Getter
 public class UserFilterOptions {
     private final Optional<String> username;

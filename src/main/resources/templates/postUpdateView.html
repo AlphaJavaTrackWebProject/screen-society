@@ -101,7 +101,8 @@
                 <div class="form-floating mb-3">
                     <input class="form-control" id="tags" type="text"
                            placeholder="Tags (comma separated)"
-                           th:field="*{tags}"/>
+                           name="tags"
+                           th:value="${#strings.arrayJoin(postUpdate.tags, ', ')}"/>
                     <label for="tags">Tags (comma separated)</label>
 
                     <!-- This catches the Set size error -->
