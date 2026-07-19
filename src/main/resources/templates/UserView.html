@@ -53,14 +53,11 @@
     <div class="col-md-10">
       <h3 class="mb-4 fw-bolder">Recent Activity</h3>
 
-      <!-- Check if the user has posts -->
       <div th:if="${posts != null and !posts.isEmpty()}">
 
-        <!-- Loop through the user's posts -->
         <div th:each="post : ${posts}" class="post-preview mb-4 pb-4 border-bottom">
           <a th:href="@{/posts/{id}(id=${post.id})}" class="text-decoration-none">
             <h4 class="post-title fw-bolder" th:text="${post.title}">Post Title</h4>
-            <!-- Limit content to a snippet -->
             <h5 class="post-subtitle fs-6 text-muted fw-light mt-2"
                 th:text="${#strings.abbreviate(post.content, 150)}">Content snippet</h5>
           </a>
@@ -68,7 +65,6 @@
 
       </div>
 
-      <!-- Fallback if there are no posts -->
       <div th:if="${posts == null or posts.isEmpty()}">
         <p class="text-muted fst-italic">This user hasn't posted anything yet.</p>
       </div>

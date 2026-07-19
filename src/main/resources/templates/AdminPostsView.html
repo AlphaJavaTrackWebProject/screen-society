@@ -54,7 +54,6 @@
         <td th:text="${post.author}">Author</td>
         <td th:text="${#temporals.format(post.createdAt, 'MMM dd, yyyy')}">Date</td>
         <td>
-          <!-- ONLY ADMIN can delete here based on your controller @PreAuthorize -->
           <form sec:authorize="hasRole('ADMIN')" th:action="@{/admin/{id}/delete(id=${post.id})}" method="post" style="display:inline;">
             <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this post?')">Delete</button>
           </form>

@@ -64,23 +64,10 @@
                            th:value="${#strings.arrayJoin(postUpdate.tags, ', ')}"/>
                     <label for="tags">Tags (comma separated)</label>
 
-                    <!-- This catches the Set size error -->
                     <div class="text-danger" th:if="${#fields.hasErrors('tags')}" th:errors="*{tags}"></div>
                 </div>
                 <button class="btn btn-primary text-uppercase d-block mx-auto" type="submit">Save changes</button>
-
-
             </form>
-
-            <!-- ========================================================= -->
-            <!-- BRO, YOUR MISSION STARTS HERE                             -->
-            <!-- 1. Open a <form> tag mapping to your update endpoint      -->
-            <!-- 2. Bind your DTO using th:object="${postUpdate}"          -->
-            <!-- 3. Build your inputs mapped with th:field                 -->
-            <!-- 4. Add a submit button to fire it to your @PostMapping    -->
-            <!-- ========================================================= -->
-
-
         </div>
     </div>
 </div>
