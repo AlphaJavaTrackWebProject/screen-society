@@ -56,6 +56,10 @@ public class TagServiceImpl implements TagService {
         Tag tagToUpdate = tagRepository.findById(id).orElseThrow(() ->
                 new EntityNotFoundException("Tag","Id",String.valueOf(id)));
 
+        if (tagRepository.findByName(formattedTagName).isPresent()) {
+            throw new DuplicateEntityException("Tag", "name", formattedTagName);
+        }
+
         tagToUpdate.setName(formattedTagName);
 
         return tagRepository.save(tagToUpdate);

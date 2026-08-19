@@ -2,8 +2,9 @@ package org.alphatrack.screensociety.services;
 
 import com.sun.jdi.request.DuplicateRequestException;
 import jakarta.persistence.EntityExistsException;
-import jakarta.persistence.EntityNotFoundException;
 import org.alphatrack.screensociety.dto.request.TagRequestDto;
+import org.alphatrack.screensociety.exceptions.DuplicateEntityException;
+import org.alphatrack.screensociety.exceptions.EntityNotFoundException;
 import org.alphatrack.screensociety.models.Tag;
 import org.alphatrack.screensociety.repositories.contracts.TagRepository;
 import org.junit.jupiter.api.Assertions;
@@ -44,7 +45,7 @@ public class TagServiceImplTest {
         Mockito.when(mockRepository.findByName(mockTagDto.getName()))
                 .thenReturn(Optional.of(new Tag()));
 
-        Assertions.assertThrows(DuplicateRequestException.class, () -> mockService.createTag(mockTagDto));
+        Assertions.assertThrows(DuplicateEntityException.class, () -> mockService.createTag(mockTagDto));
     }
 
     @Test
@@ -102,9 +103,6 @@ public class TagServiceImplTest {
         Mockito.when(mockRepository.findById(1L))
                 .thenReturn(Optional.of(realTag));
 
-        Mockito.when(mockRepository.findByName(mockTagDto.getName()))
-                .thenReturn(Optional.empty());
-
         mockService.editTag(1L, mockTagDto);
 
         Mockito.verify(mockRepository, Mockito.times(1))
@@ -126,7 +124,7 @@ public class TagServiceImplTest {
         Mockito.when(mockRepository.findByName(mockTagDto.getName()))
                 .thenReturn(Optional.of(conflictTag));
 
-        Assertions.assertThrows(EntityExistsException.class, () -> mockService.editTag(1L, mockTagDto));
+        Assertions.assertThrows(DuplicateEntityException.class, () -> mockService.editTag(1L, mockTagDto));
     }
 
     @Test

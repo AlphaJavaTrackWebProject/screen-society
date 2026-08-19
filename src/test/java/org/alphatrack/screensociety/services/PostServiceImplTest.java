@@ -1,11 +1,12 @@
 package org.alphatrack.screensociety.services;
 
-import jakarta.persistence.EntityNotFoundException;
+import org.alphatrack.screensociety.exceptions.EntityNotFoundException;
 import org.alphatrack.screensociety.dto.request.CommentRequestDto;
 import org.alphatrack.screensociety.dto.request.PostRequestDto;
 import org.alphatrack.screensociety.dto.request.PostUpdateRequestDto;
 import org.alphatrack.screensociety.dto.request.TagRequestDto;
 import org.alphatrack.screensociety.dto.request.filters.PostFilterOptions;
+import org.alphatrack.screensociety.exceptions.AuthorizationFailureException;
 import org.alphatrack.screensociety.models.Post;
 import org.alphatrack.screensociety.models.Tag;
 import org.alphatrack.screensociety.models.User;
@@ -50,7 +51,7 @@ public class PostServiceImplTest {
         Mockito.when(mockUser.getIsBlocked())
                 .thenReturn(true);
 
-        Assertions.assertThrows(IllegalStateException.class, () -> postService.createPost(postRequestDto, mockUser));
+        Assertions.assertThrows(AuthorizationFailureException.class, () -> postService.createPost(postRequestDto, mockUser));
     }
 
     @Test
@@ -93,7 +94,7 @@ public class PostServiceImplTest {
         Mockito.when(postRepository.findById(1L))
                 .thenReturn(Optional.of(post));
 
-        Assertions.assertThrows(AccessDeniedException.class, () -> postService.updatePost(1L, postUpdateRequestDto, mockUser));
+        Assertions.assertThrows(AuthorizationFailureException.class, () -> postService.updatePost(1L, postUpdateRequestDto, mockUser));
 
     }
 
@@ -138,7 +139,7 @@ public class PostServiceImplTest {
         user.setIsBlocked(true);
         CommentRequestDto commentRequestDto = new CommentRequestDto();
 
-        Assertions.assertThrows(IllegalStateException.class, () -> postService.addCommentOnPost(commentRequestDto, 1L, user));
+        Assertions.assertThrows(AuthorizationFailureException.class, () -> postService.addCommentOnPost(commentRequestDto, 1L, user));
     }
 
     @Test
@@ -173,7 +174,7 @@ public class PostServiceImplTest {
     public void addLikesOnPost_Should_Throw_When_UserIsBlocked() {
         User user = new User();
         user.setIsBlocked(true);
-        Assertions.assertThrows(IllegalStateException.class, () -> postService.addLikesOnPost(1L, user));
+        Assertions.assertThrows(AuthorizationFailureException.class, () -> postService.addLikesOnPost(1L, user));
     }
 
     @Test
@@ -216,7 +217,7 @@ public class PostServiceImplTest {
         User user = new User();
         user.setIsBlocked(true);
 
-        Assertions.assertThrows(IllegalStateException.class, () -> postService.repost(1L, user));
+        Assertions.assertThrows(AuthorizationFailureException.class, () -> postService.repost(1L, user));
     }
 
     @Test
@@ -268,7 +269,7 @@ public class PostServiceImplTest {
 
         Mockito.when(postRepository.findById(1L)).thenReturn(Optional.of(post));
 
-        Assertions.assertThrows(AccessDeniedException.class, () -> postService.addTags(1L, tagRequestDto, currentUser));
+        Assertions.assertThrows(AuthorizationFailureException.class, () -> postService.addTags(1L, tagRequestDto, currentUser));
     }
 
     @Test
@@ -319,7 +320,7 @@ public class PostServiceImplTest {
 
     @Test
     public void deletePost_Should_Throw_When_PostIsNotFound() {
-        Assertions.assertThrows(EntityNotFoundException.class, () -> postService.deletePost(1L, mockUser));
+        Assertions.assertThrows(org.alphatrack.screensociety.exceptions.EntityNotFoundException.class, () -> postService.deletePost(1L, mockUser));
     }
 
     @Test
@@ -335,7 +336,7 @@ public class PostServiceImplTest {
 
         Mockito.when(postRepository.findById(1L)).thenReturn(Optional.of(post));
 
-        Assertions.assertThrows(AccessDeniedException.class, () -> postService.deletePost(1L, currentUser));
+        Assertions.assertThrows(AuthorizationFailureException.class, () -> postService.deletePost(1L, currentUser));
     }
 
     @Test
@@ -381,7 +382,7 @@ public class PostServiceImplTest {
 
         Mockito.when(postRepository.findById(1L)).thenReturn(Optional.of(post));
 
-        Assertions.assertThrows(AccessDeniedException.class, () -> postService.getPostForUpdate(1L, currentUser));
+        Assertions.assertThrows(AuthorizationFailureException.class, () -> postService.getPostForUpdate(1L, currentUser));
     }
 
     @Test

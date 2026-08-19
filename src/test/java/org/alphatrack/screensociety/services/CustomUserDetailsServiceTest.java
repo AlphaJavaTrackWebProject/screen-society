@@ -1,6 +1,8 @@
 package org.alphatrack.screensociety.services;
 
+import org.alphatrack.screensociety.exceptions.EntityNotFoundException;
 import org.alphatrack.screensociety.models.User;
+import org.alphatrack.screensociety.models.enums.Role;
 import org.alphatrack.screensociety.repositories.contracts.UserRepository;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -25,13 +27,14 @@ public class CustomUserDetailsServiceTest {
 
     @Test
     public void loadUserByUsername_Should_Throw_When_UserNotFound() {
-        Assertions.assertThrows(UsernameNotFoundException.class, () -> customUserDetailsService.loadUserByUsername("unknownUser"));
+        Assertions.assertThrows(EntityNotFoundException.class, () -> customUserDetailsService.loadUserByUsername("unknownUser"));
     }
 
     @Test
     public void loadUserByUsername_Should_ReturnUserDetails_When_UserFound() {
         User user = new User();
         user.setUsername("testUser");
+        user.setRole(Role.USER);
 
         Mockito.when(userRepository.findUserByUsername("testUser")).thenReturn(Optional.of(user));
 

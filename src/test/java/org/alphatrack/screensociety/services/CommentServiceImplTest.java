@@ -1,8 +1,9 @@
 package org.alphatrack.screensociety.services;
 
-import jakarta.persistence.EntityNotFoundException;
 import org.alphatrack.screensociety.dto.request.CommentRequestDto;
 import org.alphatrack.screensociety.dto.request.filters.CommentFilterOptions;
+import org.alphatrack.screensociety.exceptions.AuthorizationFailureException;
+import org.alphatrack.screensociety.exceptions.EntityNotFoundException;
 import org.alphatrack.screensociety.models.Comment;
 import org.alphatrack.screensociety.models.Post;
 import org.alphatrack.screensociety.models.User;
@@ -64,7 +65,7 @@ public class CommentServiceImplTest {
 
         Mockito.when(commentRepository.findById(1L)).thenReturn(Optional.of(comment));
 
-        Assertions.assertThrows(AccessDeniedException.class, () -> commentService.updateComment(1L, dto, currentUser));
+        Assertions.assertThrows(AuthorizationFailureException.class, () -> commentService.updateComment(1L, dto, currentUser));
     }
 
     @Test
@@ -98,7 +99,7 @@ public class CommentServiceImplTest {
 
         Mockito.when(commentRepository.findById(1L)).thenReturn(Optional.of(comment));
 
-        Assertions.assertThrows(AccessDeniedException.class, () -> commentService.deleteComment(1L, currentUser));
+        Assertions.assertThrows(AuthorizationFailureException.class, () -> commentService.deleteComment(1L, currentUser));
     }
 
     @Test
@@ -149,7 +150,7 @@ public class CommentServiceImplTest {
 
         Mockito.when(commentRepository.findById(1L)).thenReturn(Optional.of(comment));
 
-        Assertions.assertThrows(AccessDeniedException.class, () -> commentService.getCommentForEdit(1L, currentUser));
+        Assertions.assertThrows(AuthorizationFailureException.class, () -> commentService.getCommentForEdit(1L, currentUser));
     }
 
     @Test
