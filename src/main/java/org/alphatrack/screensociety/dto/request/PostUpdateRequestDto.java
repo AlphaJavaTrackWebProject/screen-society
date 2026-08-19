@@ -14,11 +14,11 @@ import java.util.Set;
 public class PostUpdateRequestDto {
 
     @NotEmpty(message = "The post must have a title")
-    @Size(min = 5, max = 30, message = "Title length should be between 5 and 30 characters")
+    @Size(min = 16, max = 64, message = "Title length should be between 16 and 64 characters")
     private String title;
 
     @NotEmpty(message = "The post must contain content / description")
-    @Size(min = 10, max = 255, message = "description size should be between 10 and 255 characters")
+    @Size(min = 32, max = 8192, message = "description size should be between 32 and 8192 characters")
     private String content;
 
     @Size(min = 1, max = 5, message = "You must provide between 1 and 5 tags")
