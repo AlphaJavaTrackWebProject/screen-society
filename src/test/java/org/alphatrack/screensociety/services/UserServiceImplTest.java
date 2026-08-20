@@ -1,11 +1,13 @@
 package org.alphatrack.screensociety.services;
 
 
-import jakarta.persistence.EntityNotFoundException;
+import org.alphatrack.screensociety.exceptions.AuthorizationFailureException;
+import org.alphatrack.screensociety.exceptions.EntityNotFoundException;
 import org.alphatrack.screensociety.dto.request.UserRegistrationDto;
 import org.alphatrack.screensociety.dto.request.UserUpdateDto;
 import org.alphatrack.screensociety.dto.request.filters.PostFilterOptions;
 import org.alphatrack.screensociety.dto.request.filters.UserFilterOptions;
+import org.alphatrack.screensociety.exceptions.DuplicateEntityException;
 import org.alphatrack.screensociety.models.Post;
 import org.alphatrack.screensociety.models.User;
 import org.alphatrack.screensociety.models.enums.Role;
@@ -58,7 +60,7 @@ public class UserServiceImplTest {
         Mockito.when(userRepository.findUserByUsername(mockUserDto.getUsername()))
                 .thenReturn(Optional.of(new User()));
 
-        Assertions.assertThrows(IllegalArgumentException.class, () -> userService.registerUser(mockUserDto));
+        Assertions.assertThrows(DuplicateEntityException.class, () -> userService.registerUser(mockUserDto));
     }
 
     @Test
@@ -68,7 +70,7 @@ public class UserServiceImplTest {
         Mockito.when(userRepository.findUserByEmail(mockUserDto.getEmail()))
                 .thenReturn(Optional.of(new User()));
 
-        Assertions.assertThrows(IllegalArgumentException.class, () -> userService.registerUser(mockUserDto));
+        Assertions.assertThrows(DuplicateEntityException.class, () -> userService.registerUser(mockUserDto));
     }
 
     @Test
@@ -99,7 +101,7 @@ public class UserServiceImplTest {
         Mockito.when(mockUser.getId())
                         .thenReturn(2L);
 
-        Assertions.assertThrows(AccessDeniedException.class,() -> userService.updateProfile(Mockito.mock(UserUpdateDto.class),mockUser,1L));
+        Assertions.assertThrows(AuthorizationFailureException.class,() -> userService.updateProfile(Mockito.mock(UserUpdateDto.class),mockUser,1L));
     }
 
     @Test
@@ -108,25 +110,21 @@ public class UserServiceImplTest {
         userUpdateDto.setFirstName("NewFirst");
         userUpdateDto.setLastName("NewLast");
 
-        Mockito.when(mockUser.getId())
-                .thenReturn(1L);
+        User loggedInUser = User.builder()
+                .id(1L)
+                .firstName("OldFirst")
+                .lastName("OldLast")
+                .build();
 
-        User dbUser = new User();
-        dbUser.setFirstName("OldFirst");
-        dbUser.setLastName("OldLast");
-
-        Mockito.when(userRepository.findById(1L))
-                .thenReturn(Optional.of(dbUser));
+        userService.updateProfile(userUpdateDto, loggedInUser, 1L);
 
         ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
-        userService.updateProfile(userUpdateDto, mockUser, 1L);
-
-        Mockito.verify(userRepository,Mockito.times(1)).save(userCaptor.capture());
+        Mockito.verify(userRepository, Mockito.times(1)).save(userCaptor.capture());
 
         User resultUser = userCaptor.getValue();
 
-        Assertions.assertEquals(resultUser.getFirstName(), userUpdateDto.getFirstName());
-        Assertions.assertEquals(resultUser.getLastName(), userUpdateDto.getLastName());
+        Assertions.assertEquals("NewFirst", resultUser.getFirstName());
+        Assertions.assertEquals("NewLast", resultUser.getLastName());
 
     }
 
@@ -151,7 +149,7 @@ public class UserServiceImplTest {
         Mockito.when(mockUser.getRole())
                 .thenReturn(Role.ADMIN);
 
-        Assertions.assertThrows(IllegalArgumentException.class, () -> userService.blockUser(1L));
+        Assertions.assertThrows(AuthorizationFailureException.class, () -> userService.blockUser(1L));
     }
 
     @Test
@@ -230,7 +228,7 @@ public class UserServiceImplTest {
         Mockito.when(mockUser.getId())
                 .thenReturn(1L);
 
-        Assertions.assertThrows(AccessDeniedException.class, () -> userService.removeUser(2L, mockUser));
+        Assertions.assertThrows(AuthorizationFailureException.class, () -> userService.removeUser(2L, mockUser));
 
     }
 
