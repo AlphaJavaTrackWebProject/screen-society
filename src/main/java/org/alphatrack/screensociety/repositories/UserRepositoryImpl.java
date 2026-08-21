@@ -32,6 +32,10 @@ public class UserRepositoryImpl  implements UserRepositoryCustom {
 
         List<Predicate> predicates = new ArrayList<>();
 
+        if (!userFilterOptions.isIncludeDisabled()) {
+            predicates.add(cb.isTrue(userRoot.get("isEnabled")));
+        }
+
         userFilterOptions.getUsername().ifPresent(username ->
                 predicates.add(cb.like(userRoot.get("username"),"%" + username + "%")));
 

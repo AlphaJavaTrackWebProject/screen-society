@@ -48,7 +48,10 @@ public class UserRestController {
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
     public List<UserResponseDto> getAll() {
-        return modelMapper.usersListToResponseDtoList(userService.searchUsers(UserFilterOptions.builder().build()));
+        UserFilterOptions options = UserFilterOptions.builder()
+                .includeDisabled(true)
+                .build();
+        return modelMapper.usersListToResponseDtoList(userService.searchUsers(options));
     }
 
     @Operation(summary = "Returns a specific user via provided ID")
@@ -107,8 +110,14 @@ public class UserRestController {
     @PreAuthorize("hasRole('ADMIN') or #currentUser.id == #targetId ")
     @DeleteMapping("/{targetId}")
     public void deleteUser(@PathVariable Long targetId, @AuthenticationPrincipal CustomUserDetails currentUser) {
-
         userService.removeUser(targetId, currentUser.getUser());
+    }
+
+    @Operation(summary = "Restores a user")
+    @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping("/{targetId}/restore")
+    public void restoreUser(@PathVariable Long targetId) {
+        userService.restoreUser(targetId);
     }
 
     @Operation(summary = "Editing a specific user")
@@ -116,7 +125,6 @@ public class UserRestController {
     @PutMapping("/{targetId}")
     public UserResponseDto updateUser(@Valid @RequestBody UserUpdateDto userUpdateDto,
                                       @AuthenticationPrincipal CustomUserDetails currentUser, @PathVariable Long targetId) {
-
         return modelMapper.userToUserDto(userService.updateProfile(userUpdateDto, currentUser.getUser(), targetId));
 
     }
@@ -125,7 +133,6 @@ public class UserRestController {
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{targetId}/status")
     public void changeStatus(@PathVariable Long targetId) {
-
         User targetUser = userService.getUserById(targetId);
 
         if (targetUser.getIsBlocked()) {
@@ -148,6 +155,11 @@ public class UserRestController {
     public void promoteToModerator(@PathVariable Long targetId) {
         userService.promoteToModerator(targetId);
     }
+
+    @Operation(summary = "Demotes a user to MODERATOR, ADMIN only")
+    @PreAuthorize("hasRole('ADMIN')")
+    @PutMapping("/{targetId}/demote-mod")
+    public void demoteToModerator(@PathVariable Long targetId) {userService.demoteToModerator(targetId);}
 
     @Operation(summary = "Demotes a user to standard USER, ADMIN only")
     @PreAuthorize("hasRole('ADMIN')")

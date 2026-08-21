@@ -71,24 +71,35 @@
 
         <!-- Status Badge -->
         <td>
-          <span class="badge bg-danger" th:if="${user.isBlocked}">Blocked</span>
-          <span class="badge bg-success" th:unless="${user.isBlocked}">Active</span>
+          <span class="badge bg-dark" th:if="${!user.isEnabled}">Disabled</span>
+          <span class="badge bg-danger" th:if="${user.isEnabled and user.isBlocked}">Blocked</span>
+          <span class="badge bg-success" th:if="${user.isEnabled and !user.isBlocked}">Active</span>
         </td>
 
         <td>
-          <!-- Show Block only if user is active -->
-          <form th:unless="${user.isBlocked}" th:action="@{/admin/{id}/block(id=${user.id})}" method="post" style="display:inline;">
+          <!-- Restore Button (Only if disabled) -->
+          <form th:if="${!user.isEnabled}" th:action="@{/admin/{id}/restore(id=${user.id})}" method="post" style="display:inline;">
+            <button type="submit" class="btn btn-sm btn-outline-success" title="Restore User">Restore</button>
+          </form>
+
+          <!-- Disable Button (Only if enabled) -->
+          <form th:if="${user.isEnabled}" th:action="@{/admin/{id}/remove(id=${user.id})}" method="post" style="display:inline;">
+            <button type="submit" class="btn btn-sm btn-outline-dark" title="Disable User" onclick="return confirm('Are you sure you want to disable this user?')">Disable</button>
+          </form>
+
+          <!-- Show Block only if user is ACTIVE and ENABLED -->
+          <form th:if="${user.isEnabled and !user.isBlocked}" th:action="@{/admin/{id}/block(id=${user.id})}" method="post" style="display:inline;">
             <button type="submit" class="btn btn-sm btn-outline-danger" title="Block User">Block</button>
           </form>
 
-          <!-- Show Unblock only if user is blocked -->
-          <form th:if="${user.isBlocked}" th:action="@{/admin/{id}/unblock(id=${user.id})}" method="post" style="display:inline;">
-            <button type="submit" class="btn btn-sm btn-outline-success" title="Unblock User">Unblock</button>
+          <!-- Show Unblock only if user is BLOCKED and ENABLED -->
+          <form th:if="${user.isEnabled and user.isBlocked}" th:action="@{/admin/{id}/unblock(id=${user.id})}" method="post" style="display:inline;">
+            <button type="submit" class="btn btn-sm btn-outline-warning" title="Unblock User">Unblock</button>
           </form>
 
+          <!-- Role management buttons - Only visible to Admins on Enabled users -->
           <th:block sec:authorize="hasRole('ADMIN')">
-            <!-- Safety Check: Admin cannot change their own role -->
-            <th:block th:if="${#authentication.name != user.username}">
+            <th:block th:if="${user.isEnabled and #authentication.name != user.username}">
 
               <!-- If USER -->
               <th:block th:if="${#strings.equals(user.role, 'USER')}">

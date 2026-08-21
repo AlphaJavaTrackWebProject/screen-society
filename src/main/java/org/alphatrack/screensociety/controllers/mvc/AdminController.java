@@ -41,8 +41,11 @@ public class AdminController {
 
     @GetMapping("/users")
     public String getUsers(UserFilterOptions userFilterOptions, Model model){
+        UserFilterOptions adminOptions = userFilterOptions.toBuilder()
+                .includeDisabled(true)
+                .build();
 
-        model.addAttribute("users", modelMapper.userListToAdminResponseDtoList(userService.searchUsers(userFilterOptions)));
+        model.addAttribute("users", modelMapper.userListToAdminResponseDtoList(userService.searchUsers(adminOptions)));
 
         return "AdminUsersView";
     }
@@ -123,6 +126,28 @@ public class AdminController {
     public String demoteToUser(@PathVariable Long targetUser, RedirectAttributes redirectAttributes) {
         try {
             userService.demoteToUser(targetUser);
+        } catch (RuntimeException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+        }
+        return "redirect:/admin/users";
+    }
+
+    @PostMapping("/{targetUser}/remove")
+    @PreAuthorize("hasRole('ADMIN')")
+    public String disableUser(@PathVariable Long targetUser, RedirectAttributes redirectAttributes) {
+        try {
+            userService.removeUserAsAdmin(targetUser);
+        } catch (RuntimeException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+        }
+        return "redirect:/admin/users";
+    }
+
+    @PostMapping("/{targetUser}/restore")
+    @PreAuthorize("hasRole('ADMIN')")
+    public String restoreUser(@PathVariable Long targetUser, RedirectAttributes redirectAttributes) {
+        try {
+            userService.restoreUser(targetUser);
         } catch (RuntimeException e) {
             redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
         }

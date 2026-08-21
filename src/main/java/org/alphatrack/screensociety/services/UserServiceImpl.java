@@ -86,7 +86,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public void blockUser(Long userId) {
-        User user = getUserById(userId);
+        User user = getUserByIdForAdmin(userId);
 
         if (user.getRole() == Role.ADMIN) {
             throw new AuthorizationFailureException("You cannot block another admin");
@@ -99,7 +99,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public void unBlockUser(Long userId) {
-        User user = getUserById(userId);
+        User user = getUserByIdForAdmin(userId);
         user.setIsBlocked(false);
         userRepository.save(user);
     }
@@ -107,7 +107,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public void promoteToAdmin(Long userId) {
-        User user = getUserById(userId);
+        User user = getUserByIdForAdmin(userId);
         user.setRole(Role.ADMIN);
         userRepository.save(user);
     }
@@ -115,7 +115,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public void promoteToModerator(Long userId) {
-        User user = getUserById(userId);
+        User user = getUserByIdForAdmin(userId);
         user.setRole(Role.MODERATOR);
         userRepository.save(user);
     }
@@ -123,7 +123,7 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public void demoteToModerator(Long userId) {
-        User user = getUserById(userId);
+        User user = getUserByIdForAdmin(userId);
         user.setRole(Role.MODERATOR);
         userRepository.save(user);
     }
@@ -131,15 +131,24 @@ public class UserServiceImpl implements UserService {
     @Transactional
     @Override
     public void demoteToUser(Long userId) {
-        User user = getUserById(userId);
+        User user = getUserByIdForAdmin(userId);
         user.setRole(Role.USER);
         userRepository.save(user);
     }
 
     @Override
     public User getUserById(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("User", "id", String.valueOf(id)));
+        if (!user.getIsEnabled()) {
+            throw new EntityNotFoundException("User", "id", String.valueOf(id));
+        }
+        return user;
+    }
+
+    private User getUserByIdForAdmin(Long id) {
         return userRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundException("User","id",String.valueOf(id)));
+                .orElseThrow(() -> new EntityNotFoundException("User", "id", String.valueOf(id)));
     }
 
     @Override
@@ -149,18 +158,35 @@ public class UserServiceImpl implements UserService {
 
     }
 
+    @Transactional
     @Override
     public void removeUser(Long id, User currentUser) {
-
-        boolean isAdmin = currentUser.getRole().equals(Role.ADMIN);
         boolean isOwner = currentUser.getId().equals(id);
-
+        boolean isAdmin = currentUser.getRole().equals(Role.ADMIN);
 
         if (!isOwner && !isAdmin) {
             throw new AuthorizationFailureException("Only the author or an admin can delete this account.");
         }
 
-        userRepository.delete(getUserById(id));
+        User userToDelete = getUserById(id);
+        userToDelete.setIsEnabled(false);
+        userRepository.save(userToDelete);
+    }
+
+    @Transactional
+    @Override
+    public void removeUserAsAdmin(Long id) {
+        User userToDelete = getUserById(id);
+        userToDelete.setIsEnabled(false);
+        userRepository.save(userToDelete);
+    }
+
+    @Transactional
+    @Override
+    public void restoreUser(Long id) {
+        User user = getUserByIdForAdmin(id);
+        user.setIsEnabled(true);
+        userRepository.save(user);
     }
 
     @Override

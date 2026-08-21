@@ -25,4 +25,6 @@ public class AdminUserResponseDto {
 
     private boolean isBlocked;
 
+    private boolean isEnabled;
+
 }
