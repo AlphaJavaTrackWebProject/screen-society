@@ -38,8 +38,13 @@ public class User {
     @Column(name = "password", nullable = false)
     private String password;
 
+    @Builder.Default
     @Column(name = "is_blocked")
-    private Boolean isBlocked;
+    private Boolean isBlocked = false;
+
+    @Builder.Default
+    @Column(name = "is_enabled")
+    private Boolean isEnabled = true;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)

@@ -34,5 +34,9 @@ public interface UserService {
 
     void removeUser(Long id, User currentUser);
 
+    void removeUserAsAdmin(Long id);
+
+    void restoreUser(Long id);
+
     User getUserByUsername(String username);
 }

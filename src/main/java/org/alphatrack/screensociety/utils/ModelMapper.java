@@ -123,6 +123,7 @@ public class ModelMapper {
                 .email(user.getEmail())
                 .role(user.getRole())
                 .isBlocked(user.getIsBlocked())
+                .isEnabled(user.getIsEnabled())
                 .build();
     }
 
