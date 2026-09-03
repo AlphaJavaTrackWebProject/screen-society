@@ -3,7 +3,7 @@
 A community forum for movies, TV shows, and entertainment news — built as a team capstone project during [Telerik Academy](https://www.telerikacademy.com/)'s Java Alpha Track.
 
 
-![Screen Society screenshot](docs/screenshot.png)
+![Screen Society screenshot](docs/screen-society-homepage.png)
 
 ## Overview
 
@@ -109,7 +109,7 @@ Layered architecture: controllers handle HTTP concerns and delegate to
 services, services own business logic and authorization checks, and
 repositories handle persistence via Spring Data JPA.
 
-![Database Schema](Database%20Schema.png)
+![Database Schema](docs/database-schema.png)
 
 ## Testing
 
