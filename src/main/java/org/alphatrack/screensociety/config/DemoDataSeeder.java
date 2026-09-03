@@ -15,18 +15,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Set;
 
-/**
- * Seeds demo data (users, tags, posts, comments, likes, a repost) so the app
- * isn't empty on first run. Only active under the "demo" profile — never
- * runs against a real/production datasource.
- *
- * NOTE: field names below (email, firstName, lastName, isBlocked, isEnabled)
- * are inferred from the DDL column names. Adjust to match your actual User
- * entity's builder fields if they differ.
- */
+
 @Component
 @Profile("demo")
 @RequiredArgsConstructor
@@ -42,7 +33,7 @@ public class DemoDataSeeder implements CommandLineRunner {
     @Override
     public void run(String... args) {
         if (userRepository.count() > 0) {
-            return; // already seeded — don't duplicate on every restart
+            return;
         }
 
         String encodedPassword = passwordEncoder.encode(DEMO_PASSWORD);
@@ -120,7 +111,6 @@ public class DemoDataSeeder implements CommandLineRunner {
                 .tags(Set.of(documentary))
                 .build());
 
-        // Repost of post2 by demoUser
         postRepository.save(Post.builder()
                 .author(demoUser)
                 .title(post2.getTitle())
