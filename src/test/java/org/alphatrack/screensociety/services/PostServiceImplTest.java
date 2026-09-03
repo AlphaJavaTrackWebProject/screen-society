@@ -12,7 +12,7 @@ import org.alphatrack.screensociety.models.Tag;
 import org.alphatrack.screensociety.models.User;
 import org.alphatrack.screensociety.models.enums.Role;
 import org.alphatrack.screensociety.repositories.contracts.PostRepository;
-import org.alphatrack.screensociety.repositories.contracts.TagRepository;
+import org.alphatrack.screensociety.services.contracts.TagService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,7 +22,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.access.AccessDeniedException;
 
 import java.util.HashSet;
 import java.util.Optional;
@@ -33,7 +32,7 @@ public class PostServiceImplTest {
     @Mock
     private PostRepository postRepository;
     @Mock
-    private TagRepository tagRepository;
+    private TagService tagService;
 
     @InjectMocks
     private PostServiceImpl postService;
@@ -85,12 +84,13 @@ public class PostServiceImplTest {
     @Test
     public void updatePost_Should_Throw_When_UserIsNotOwnerOrAdmin() {
         PostUpdateRequestDto postUpdateRequestDto = Mockito.mock(PostUpdateRequestDto.class);
-        mockUser.setRole(Role.USER);
-        mockUser.setUsername("Ivan");
+        Mockito.when(mockUser.getId()).thenReturn(1L);
+
         Post post = new Post();
-        User user = new User();
-        user.setUsername("Peter");
-        post.setAuthor(user);
+        User author = Mockito.mock(User.class);
+        Mockito.when(author.getId()).thenReturn(2L);
+        post.setAuthor(author);
+
         Mockito.when(postRepository.findById(1L))
                 .thenReturn(Optional.of(post));
 
@@ -100,7 +100,8 @@ public class PostServiceImplTest {
 
     @Test
     public void updatePost_Should_MapAndAddTagAndUpdateContent() {
-        mockUser.setUsername("Peter");
+        Mockito.when(mockUser.getId()).thenReturn(1L);
+
         Set<String> tags = new HashSet<>();
         tags.add("horror");
         tags.add("sci-fi");
@@ -110,7 +111,7 @@ public class PostServiceImplTest {
         Post post = new Post();
         post.setAuthor(mockUser);
         Mockito.when(postRepository.findById(1L))
-                        .thenReturn(Optional.of(post));
+                .thenReturn(Optional.of(post));
 
         Tag horrorTag = new Tag();
         horrorTag.setName("horror");
@@ -118,8 +119,7 @@ public class PostServiceImplTest {
         Tag scifiTag = new Tag();
         scifiTag.setName("sci-fi");
 
-        Mockito.when(tagRepository.findByName("horror")).thenReturn(Optional.of(horrorTag));
-        Mockito.when(tagRepository.findByName("sci-fi")).thenReturn(Optional.of(scifiTag));
+        Mockito.when(tagService.resolveOrCreate(tags)).thenReturn(Set.of(horrorTag, scifiTag));
 
         postService.updatePost(1L, postUpdateRequestDto, mockUser);
 
@@ -158,7 +158,7 @@ public class PostServiceImplTest {
         commentRequestDto.setContent("Testing the content feature for comment");
         Post post = new Post();
         Mockito.when(postRepository.findById(1L))
-                        .thenReturn(Optional.of(post));
+                .thenReturn(Optional.of(post));
 
         postService.addCommentOnPost(commentRequestDto,1L, user);
 
@@ -288,7 +288,7 @@ public class PostServiceImplTest {
 
         Tag actionTag = new Tag();
         actionTag.setName("action");
-        Mockito.when(tagRepository.findByName("action")).thenReturn(Optional.of(actionTag));
+        Mockito.when(tagService.resolveOrCreate("action")).thenReturn(actionTag);
 
         postService.addTags(1L, tagRequestDto, currentUser);
 
@@ -375,10 +375,12 @@ public class PostServiceImplTest {
     @Test
     public void getPostForUpdate_Should_Throw_When_UserIsNotOwner() {
         User author = Mockito.mock(User.class);
+        Mockito.when(author.getId()).thenReturn(2L);
         Post post = new Post();
         post.setAuthor(author);
 
         User currentUser = Mockito.mock(User.class);
+        Mockito.when(currentUser.getId()).thenReturn(1L);
 
         Mockito.when(postRepository.findById(1L)).thenReturn(Optional.of(post));
 
@@ -388,6 +390,7 @@ public class PostServiceImplTest {
     @Test
     public void getPostForUpdate_Should_ReturnPost_When_UserIsOwner() {
         User author = Mockito.mock(User.class);
+        Mockito.when(author.getId()).thenReturn(1L);
         Post post = new Post();
         post.setAuthor(author);
 
