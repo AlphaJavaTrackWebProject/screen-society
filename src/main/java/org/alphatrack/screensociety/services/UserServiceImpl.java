@@ -15,7 +15,6 @@ import org.alphatrack.screensociety.models.enums.Role;
 import org.alphatrack.screensociety.repositories.contracts.PostRepository;
 import org.alphatrack.screensociety.repositories.contracts.UserRepository;
 import org.alphatrack.screensociety.services.contracts.UserService;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
