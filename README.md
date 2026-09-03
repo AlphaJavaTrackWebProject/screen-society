@@ -34,8 +34,7 @@ tooling (user blocking, admin roles) and a tag-based discovery system.
 ## Quick Start (Docker)
 
 The fastest way to run the app locally — spins up the application together
-with a disposable local MySQL database. No external database access
-required, and none of your real credentials are needed.
+with a disposable local MySQL database.
 
 ```bash
 git clone https://github.com/AlphaJavaTrackWebProject/screen-society.git
@@ -87,8 +86,6 @@ tags, and a repost so the feed isn't empty on first load.
 | `DB_PASSWORD`       | Local MySQL password                      | `screensociety`   |
 | `DB_ROOT_PASSWORD`  | Local MySQL root password                 | `rootpassword`    |
 
-These are only used by the Dockerized local database — not related to the
-project's actual Aiven-hosted production/dev database.
 
 ## Project Structure
 
