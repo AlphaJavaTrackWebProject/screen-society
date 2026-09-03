@@ -10,36 +10,29 @@ import org.alphatrack.screensociety.exceptions.AuthorizationFailureException;
 import org.alphatrack.screensociety.exceptions.EntityNotFoundException;
 import org.alphatrack.screensociety.models.Comment;
 import org.alphatrack.screensociety.models.Post;
-import org.alphatrack.screensociety.models.Tag;
 import org.alphatrack.screensociety.models.User;
 import org.alphatrack.screensociety.models.enums.Role;
 import org.alphatrack.screensociety.repositories.contracts.PostRepository;
-import org.alphatrack.screensociety.repositories.contracts.TagRepository;
-import org.alphatrack.screensociety.repositories.contracts.UserRepository;
 import org.alphatrack.screensociety.services.contracts.PostService;
+import org.alphatrack.screensociety.services.contracts.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Service
 public class PostServiceImpl implements PostService {
 
     private final PostRepository postRepository;
-    private final TagRepository tagRepository;
-
+    private final TagService tagService;
 
     @Autowired
-    public PostServiceImpl(PostRepository postRepository, TagRepository tagRepository) {
+    public PostServiceImpl(PostRepository postRepository, TagService tagService) {
         this.postRepository = postRepository;
-        this.tagRepository = tagRepository;
-
+        this.tagService = tagService;
     }
-
 
     @Transactional
     @Override
@@ -64,38 +57,12 @@ public class PostServiceImpl implements PostService {
     public Post updatePost(Long postId, PostUpdateRequestDto postUpdateRequestDto, User currentUser) {
 
         Post post = getByPostId(postId);
-
-        boolean isOwner = post.getAuthor().equals(currentUser);
-
-        if (!isOwner) {
-            throw new AuthorizationFailureException("Only author / owner can edit it's post");
-        }
-
-        Set<Tag> tags = new HashSet<>();
-
-        if (postUpdateRequestDto.getTags() != null) {
-            for (String tagName : postUpdateRequestDto.getTags()) {
-
-                String formattedTagName = tagName.toLowerCase().trim();
-
-                Tag tag = tagRepository.findByName(formattedTagName).orElseGet(() -> {
-
-                    Tag newTag = Tag.builder()
-                            .name(formattedTagName)
-                            .build();
-
-                    return tagRepository.save(newTag);
-                });
-
-                tags.add(tag);
-            }
-        }
+        validateOwnership(post, currentUser);
 
         post.setContent(postUpdateRequestDto.getContent());
-        post.setTags(tags);
+        post.setTags(tagService.resolveOrCreate(postUpdateRequestDto.getTags()));
 
-        postRepository.save(post);
-        return post;
+        return postRepository.save(post);
     }
 
     @Transactional
@@ -163,41 +130,28 @@ public class PostServiceImpl implements PostService {
     @Transactional
     @Override
     public Post addTags(Long postId, TagRequestDto tagRequestDto, User currentUser) {
+
         Post post = getByPostId(postId);
 
-        boolean isOwner = post.getAuthor().getId().equals(currentUser.getId());
         boolean isAdmin = currentUser.getRole().equals(Role.ADMIN);
-
-        if (!isOwner && !isAdmin) {
+        if (!isOwner(post, currentUser) && !isAdmin) {
             throw new AuthorizationFailureException("Only the author or an admin can tag this post.");
         }
 
-        String formattedTagName = tagRequestDto.getName().toLowerCase().trim();
-
-        Tag tag = tagRepository.findByName(formattedTagName).orElseGet(() -> {
-            Tag newTag = Tag.builder()
-                    .name(formattedTagName)
-                    .build();
-            return tagRepository.save(newTag);
-        });
-
-        post.addTag(tag);
+        post.addTag(tagService.resolveOrCreate(tagRequestDto.getName()));
 
         return postRepository.save(post);
     }
-
 
     @Override
     public List<Post> searchPosts(PostFilterOptions postFilterOptions) {
         return postRepository.findAll(postFilterOptions);
     }
 
-
     @Override
     public List<Post> showTop10MostCommented() {
         return postRepository.findTop10MostCommented();
     }
-
 
     @Override
     public List<Post> show10MostRecentPosts() {
@@ -207,11 +161,11 @@ public class PostServiceImpl implements PostService {
     @Transactional
     @Override
     public void deletePost(Long postId, User currentUser) {
-        Post post = getByPostId(postId);
-        boolean isOwner = post.getAuthor().getId().equals(currentUser.getId());
-        boolean isAdmin = currentUser.getRole().equals(Role.ADMIN);
 
-        if (!isOwner && !isAdmin) {
+        Post post = getByPostId(postId);
+
+        boolean isAdmin = currentUser.getRole().equals(Role.ADMIN);
+        if (!isOwner(post, currentUser) && !isAdmin) {
             throw new AuthorizationFailureException("Only the author or an admin can delete a post");
         }
 
@@ -227,14 +181,17 @@ public class PostServiceImpl implements PostService {
     @Override
     public Post getPostForUpdate(Long postId, User currentUser) {
         Post post = getByPostId(postId);
-
-        boolean isOwner = post.getAuthor().equals(currentUser);
-
-        if (!isOwner) {
-            throw new AuthorizationFailureException("Only author can edit its post/s");
-        }
-
+        validateOwnership(post, currentUser);
         return post;
     }
 
+    private void validateOwnership(Post post, User currentUser) {
+        if (!isOwner(post, currentUser)) {
+            throw new AuthorizationFailureException("Only the author can edit this post");
+        }
+    }
+
+    private boolean isOwner(Post post, User currentUser) {
+        return post.getAuthor().getId().equals(currentUser.getId());
+    }
 }

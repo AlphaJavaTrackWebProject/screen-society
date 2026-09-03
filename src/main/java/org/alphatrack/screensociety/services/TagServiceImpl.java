@@ -8,9 +8,10 @@ import org.alphatrack.screensociety.repositories.contracts.TagRepository;
 import org.alphatrack.screensociety.services.contracts.TagService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.util.HashSet;
 import java.util.Set;
-
+import java.util.stream.Collectors;
 
 @Service
 public class TagServiceImpl implements TagService {
@@ -21,7 +22,6 @@ public class TagServiceImpl implements TagService {
     public TagServiceImpl(TagRepository tagRepository) {
         this.tagRepository = tagRepository;
     }
-
 
     @Override
     public Set<Tag> getAll() {
@@ -34,13 +34,12 @@ public class TagServiceImpl implements TagService {
         String formattedTagName = tagRequestDto.getName().toLowerCase().trim();
 
         if (tagRepository.findByName(formattedTagName).isPresent()) {
-            throw new DuplicateEntityException("Tag","name",formattedTagName);
+            throw new DuplicateEntityException("Tag", "name", formattedTagName);
         } else {
             return tagRepository.save(Tag.builder()
                     .name(formattedTagName)
                     .build());
         }
-
     }
 
     @Override
@@ -54,7 +53,7 @@ public class TagServiceImpl implements TagService {
         String formattedTagName = tagRequestDto.getName().toLowerCase().trim();
 
         Tag tagToUpdate = tagRepository.findById(id).orElseThrow(() ->
-                new EntityNotFoundException("Tag","Id",String.valueOf(id)));
+                new EntityNotFoundException("Tag", "Id", String.valueOf(id)));
 
         if (tagRepository.findByName(formattedTagName).isPresent()) {
             throw new DuplicateEntityException("Tag", "name", formattedTagName);
@@ -68,6 +67,23 @@ public class TagServiceImpl implements TagService {
     @Override
     public Tag getByName(String tagName) {
         return tagRepository.findByName(tagName).orElseThrow(() ->
-                new EntityNotFoundException("Tag","name",tagName));
+                new EntityNotFoundException("Tag", "name", tagName));
+    }
+
+    @Override
+    public Tag resolveOrCreate(String tagName) {
+        String formattedName = tagName.toLowerCase().trim();
+        return tagRepository.findByName(formattedName)
+                .orElseGet(() -> tagRepository.save(Tag.builder().name(formattedName).build()));
+    }
+
+    @Override
+    public Set<Tag> resolveOrCreate(Set<String> tagNames) {
+        if (tagNames == null) {
+            return new HashSet<>();
+        }
+        return tagNames.stream()
+                .map(this::resolveOrCreate)
+                .collect(Collectors.toSet());
     }
 }
