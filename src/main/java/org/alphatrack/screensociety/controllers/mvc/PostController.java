@@ -49,7 +49,7 @@ public class PostController {
     public String getPostById(@PathVariable Long id, Model model) {
         model.addAttribute("post", postService.getByPostId(id));
         model.addAttribute("comment", new CommentRequestDto());
-        return "PostView";
+        return "postView";
     }
 
     @GetMapping("/new")
@@ -112,7 +112,7 @@ public class PostController {
                              Model model) {
         if (bindingResult.hasErrors()) {
             model.addAttribute("post", postService.getByPostId(postId));
-            return "PostView";
+            return "postView";
         }
         postService.addCommentOnPost(commentRequestDto, postId, currentUser.getUser());
 
