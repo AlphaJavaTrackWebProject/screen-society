@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   db:
     image: mysql:8.4
@@ -26,8 +24,7 @@ services:
       db:
         condition: service_healthy
     environment:
-      # These names must match application.properties exactly:
-      # spring.datasource.url=${DB_URL}, spring.datasource.username=${DB_USERNAME}, etc.
+
       DB_URL: jdbc:mysql://db:3306/${DB_NAME:-screensociety}?createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true&useSSL=false
       DB_USERNAME: ${DB_USER:-screensociety}
       DB_PASSWORD: ${DB_PASSWORD:-screensociety}
