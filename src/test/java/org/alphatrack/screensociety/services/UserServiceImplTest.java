@@ -242,7 +242,9 @@ public class UserServiceImplTest {
 
         userService.removeUser(1L, mockUser);
 
-        Mockito.verify(userRepository, Mockito.times(1)).delete(dbUser);
+        ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
+        Mockito.verify(userRepository, Mockito.times(1)).save(userCaptor.capture());
+        Assertions.assertFalse(userCaptor.getValue().getIsEnabled());
     }
 
     @Test
@@ -256,7 +258,9 @@ public class UserServiceImplTest {
 
         userService.removeUser(1L, mockUser);
 
-        Mockito.verify(userRepository, Mockito.times(1)).delete(mockUser);
+        ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
+        Mockito.verify(userRepository, Mockito.times(1)).save(userCaptor.capture());
+        Assertions.assertFalse(userCaptor.getValue().getIsEnabled());
     }
 
     @Test
@@ -289,6 +293,8 @@ public class UserServiceImplTest {
     public void getUserById_Should_returnUser() {
         Mockito.when(mockUser.getId())
                 .thenReturn(1L);
+        Mockito.when(mockUser.getIsEnabled())
+                .thenReturn(true);
 
         Mockito.when(userRepository.findById(1L))
                 .thenReturn(Optional.of(mockUser));

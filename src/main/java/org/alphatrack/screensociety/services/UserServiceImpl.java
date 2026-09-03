@@ -168,7 +168,7 @@ public class UserServiceImpl implements UserService {
             throw new AuthorizationFailureException("Only the author or an admin can delete this account.");
         }
 
-        User userToDelete = getUserById(id);
+        User userToDelete = getUserByIdForAdmin(id);
         userToDelete.setIsEnabled(false);
         userRepository.save(userToDelete);
     }
