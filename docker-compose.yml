@@ -1,0 +1,36 @@
+services:
+  db:
+    image: mysql:8.4
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${DB_NAME:-screensociety}
+      MYSQL_USER: ${DB_USER:-screensociety}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-screensociety}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-rootpassword}
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p${DB_ROOT_PASSWORD:-rootpassword}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build: .
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+
+      DB_URL: jdbc:mysql://db:3306/${DB_NAME:-screensociety}?createDatabaseIfNotExist=true&allowPublicKeyRetrieval=true&useSSL=false
+      DB_USERNAME: ${DB_USER:-screensociety}
+      DB_PASSWORD: ${DB_PASSWORD:-screensociety}
+      SPRING_PROFILES_ACTIVE: demo
+    ports:
+      - "8080:8080"
+
+volumes:
+  db_data:
